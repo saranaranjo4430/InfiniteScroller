@@ -21,6 +21,18 @@
     <ClCompile Include="stb_image\stb_image.cpp">
       <Filter>stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="MyGame\MyGame.cpp">
+      <Filter>MyGame</Filter>
+    </ClCompile>
+    <ClCompile Include="MyGame\Utils\GameSprite.cpp">
+      <Filter>MyGame\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="MyGame\Utils\GameViewport.cpp">
+      <Filter>MyGame\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="MyGame\Utils\Utils.cpp">
+      <Filter>MyGame\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -48,6 +60,21 @@
     <ClInclude Include="stb_image\stb_image.h">
       <Filter>stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="MyGame\Utils\Utils.h">
+      <Filter>MyGame\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="MyGame\Utils\Vectors.h">
+      <Filter>MyGame\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="MyGame\MyGame.h">
+      <Filter>MyGame</Filter>
+    </ClInclude>
+    <ClInclude Include="MyGame\Utils\GameSprite.h">
+      <Filter>MyGame\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="MyGame\Utils\GameViewport.h">
+      <Filter>MyGame\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="NextAPI">
@@ -56,14 +83,11 @@
     <Filter Include="stb_image">
       <UniqueIdentifier>{61cfc19b-c57e-4021-b530-bac172fcba86}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MyInfiniteScroller">
-      <UniqueIdentifier>{e183ff87-618a-4ba5-9dc3-4c41b07446d3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game">
+    <Filter Include="MyGame">
       <UniqueIdentifier>{5f9bd854-16f3-42bf-9d46-e05d162b3bdf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\Utils">
-      <UniqueIdentifier>{623660bf-6877-41e3-b501-f21826e4ec1a}</UniqueIdentifier>
+    <Filter Include="MyGame\Utils">
+      <UniqueIdentifier>{eb718187-7fd8-4ea4-98fa-5eb573c832bb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
