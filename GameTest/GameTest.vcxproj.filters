@@ -33,6 +33,9 @@
     <ClCompile Include="MyGame\Utils\Utils.cpp">
       <Filter>MyGame\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Tests.cpp">
+      <Filter>GameSara</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -88,6 +91,9 @@
     </Filter>
     <Filter Include="MyGame\Utils">
       <UniqueIdentifier>{eb718187-7fd8-4ea4-98fa-5eb573c832bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameSara">
+      <UniqueIdentifier>{a47ada21-7014-4e62-bced-2dca31f2c4b5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
