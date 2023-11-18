@@ -33,12 +33,6 @@
     <ClCompile Include="MyGame\Utils\Utils.cpp">
       <Filter>MyGame\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Tests.cpp">
-      <Filter>GameSara</Filter>
-    </ClCompile>
-    <ClCompile Include="Test2.cpp">
-      <Filter>GameSara</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
