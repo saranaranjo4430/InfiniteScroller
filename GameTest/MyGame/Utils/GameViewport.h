@@ -48,5 +48,4 @@ private:
     int m_VpWidth = 0;
     int m_VpHeight = 0;
     int m_Flags = 0;
-    unsigned int bgTextureID; // Declare the texture ID for the background ME 
 };
