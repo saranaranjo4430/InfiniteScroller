@@ -7,6 +7,8 @@
 #include <math.h>  
 //------------------------------------------------------------------------
 #include "app\app.h"
+#include "../stb_image/stb_image.h"
+#include "../glut/include/GL/freeglut_ext.h"
 //------------------------------------------------------------------------
 #include "MyGame\MyGame.h"
 
