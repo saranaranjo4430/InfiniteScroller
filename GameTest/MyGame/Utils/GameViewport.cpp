@@ -6,7 +6,6 @@
 
 #include "Utils.h"
 #include "GameViewport.h"
-
 //------------------------------------------------------------------------
 
 void GameViewport::Init(int _width, int _height)
@@ -15,8 +14,6 @@ void GameViewport::Init(int _width, int _height)
     m_VpHeight = _height;
 
     m_VpRatio = (float)m_VpWidth / (float)m_VpHeight;
-
-
 }
 
 void GameViewport::Render()
@@ -27,28 +24,10 @@ void GameViewport::Render()
     float topRightX = GetX(1.f);
     float topRightY = GetY(1.f);
 
-
     if (HasFlag(DRAW_VIEWPORT))
     {
         //Viewport polygon
         Utils::DrawPolygon(bottomLeftX, bottomLeftY, topRightX, topRightY, 0, 0, 1);
-
-        // Bind the background texture
-        glBindTexture(GL_TEXTURE_2D, bgTextureID);
-
-        // Render a quad with the background texture
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 0.0f);
-        glVertex2f(bottomLeftX, bottomLeftY);  // Bottom Left
-        glTexCoord2f(1.0f, 0.0f);
-        glVertex2f(topRightX, bottomLeftY);    // Bottom Right
-        glTexCoord2f(1.0f, 1.0f);
-        glVertex2f(topRightX, topRightY);      // Top Right
-        glTexCoord2f(0.0f, 1.0f);
-        glVertex2f(bottomLeftX, topRightY);    // Top Left
-        glEnd();
-
-       
     }
     
     if (HasFlag(DRAW_BORDERS))

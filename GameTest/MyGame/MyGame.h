@@ -19,19 +19,6 @@ private:
     //------------------------------------------------------------------------
     // Example Sprite Code....
     CGameSprite* testSprite;
-    CGameSprite* playerSprite;
-    CGameSprite* background;
-    bool isJumping;
-    float jumpSpeed;
-    float gravity;
-    float lane;
-    float laneWidth;
-    float screenWidth;
-    float screenHeight;
-    float gameSpeed;
-
-
-
     enum
     {
         ANIM_FORWARDS,
