@@ -89,9 +89,6 @@
     <Filter Include="MyGame\Utils">
       <UniqueIdentifier>{eb718187-7fd8-4ea4-98fa-5eb573c832bb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameSara">
-      <UniqueIdentifier>{a47ada21-7014-4e62-bced-2dca31f2c4b5}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">
