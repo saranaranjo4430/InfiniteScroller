@@ -25,8 +25,8 @@ public:
     void CreateAnimation(unsigned int id, float speed, const std::vector<int>& frames);
 
 public:
-    Vector2D position = Vector2D(0.f, 0.f);
-    Vector2D scale = Vector2D(0.f, 0.f);
+    Vector2D position = Vector2D(0.5f, 0.5f);
+    Vector2D scale = Vector2D(1.f, 1.f);
     float angle = 0.f;
 
 private:
