@@ -19,12 +19,25 @@ private:
     //------------------------------------------------------------------------
     // Example Sprite Code....
     CGameSprite* testSprite;
+
+    //background
+    CGameSprite* backgroundSprite;
+
+    //lasers
+    CGameSprite* greenlaser1Sprite;
+    CGameSprite* bluelaser1Sprite;
+    CGameSprite* darkbluelaser1Sprite;
+    CGameSprite* purplelaser1Sprite;
+    CGameSprite* redlaser1Sprite;
+    CGameSprite* yellowlaser1Sprite;
+
     enum
     {
         ANIM_FORWARDS,
         ANIM_BACKWARDS,
         ANIM_LEFT,
         ANIM_RIGHT,
+        FALL,
     };
     //------------------------------------------------------------------------
 
