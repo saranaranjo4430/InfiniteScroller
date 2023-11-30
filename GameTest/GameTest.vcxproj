@@ -202,6 +202,7 @@
     <ClCompile Include="MyGame\Utils\GameSprite.cpp" />
     <ClCompile Include="MyGame\Utils\GameViewport.cpp" />
     <ClCompile Include="MyGame\Utils\Utils.cpp" />
+    <ClCompile Include="MyGame\Utils\Vectors.cpp" />
     <ClCompile Include="stb_image\stb_image.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

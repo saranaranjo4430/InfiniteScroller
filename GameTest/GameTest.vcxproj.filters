@@ -33,6 +33,9 @@
     <ClCompile Include="MyGame\Utils\Utils.cpp">
       <Filter>MyGame\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="MyGame\Utils\Vectors.cpp">
+      <Filter>MyGame\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

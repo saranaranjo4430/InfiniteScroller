@@ -49,3 +49,5 @@ private:
     int m_VpHeight = 0;
     int m_Flags = 0;
 };
+
+extern GameViewport gameVp;

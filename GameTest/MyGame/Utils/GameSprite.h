@@ -14,7 +14,7 @@ class CSimpleSprite;
 class CGameSprite
 {
 public:
-    CGameSprite(const GameViewport& _vp, const char* _fileName, int _columns, int _rows);
+    CGameSprite(const char* _fileName, int _columns, int _rows);
     ~CGameSprite();
 
     void Update(float _deltaTime);
@@ -30,6 +30,5 @@ public:
     float angle = 0.f;
 
 private:
-    const GameViewport& m_Vp;
     CSimpleSprite* m_BaseSprite;
 };

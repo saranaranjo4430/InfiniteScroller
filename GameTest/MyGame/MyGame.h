@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utils\GameViewport.h"
+#include "Utils\Vectors.h"
 
 class CGameSprite;
 
@@ -28,6 +29,19 @@ private:
     };
     //------------------------------------------------------------------------
 
-private:
-    GameViewport m_GameVp;
+    //------------------------------------------------------------------------
+    // Example Vectors....
+    Square2D m_RotatingRect;
+    Rect2D m_MovingRect;
+    Circle2D m_MovingCircle;
+    //------------------------------------------------------------------------
+
+    //------------------------------------------------------------------------
+    // Example Controls....
+    int m_MoveState = 0;
+
+    void MoveRect(float _deltaTime, const CController* _controller);
+    void MoveCircle(float _deltaTime, const CController* _controller);
+    void MoveSprite(float _deltaTime, const CController* _controller);
+    //------------------------------------------------------------------------
 };
