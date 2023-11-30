@@ -8,6 +8,8 @@
 #include "GameViewport.h"
 //------------------------------------------------------------------------
 
+GameViewport gameVp;
+
 void GameViewport::Init(int _width, int _height)
 {
     m_VpWidth = _width;
@@ -27,18 +29,18 @@ void GameViewport::Render()
     if (HasFlag(DRAW_VIEWPORT))
     {
         //Viewport polygon
-        Utils::DrawPolygon(bottomLeftX, bottomLeftY, topRightX, topRightY, 0, 0, 1);
+        Utils::DrawPolygon(bottomLeftX, bottomLeftY, topRightX, topRightY, Utils::Color_Blue);
     }
     
     if (HasFlag(DRAW_BORDERS))
     {
         //Left & Bottom polygons
-        Utils::DrawPolygon(0, bottomLeftY, bottomLeftX, topRightY, 0, 1, 0);
-        Utils::DrawPolygon(0, 0, APP_INIT_WINDOW_WIDTH, bottomLeftY, 1, 0, 0);
+        Utils::DrawPolygon(0, bottomLeftY, bottomLeftX, topRightY, Utils::Color_Green);
+        Utils::DrawPolygon(0, 0, APP_INIT_WINDOW_WIDTH, bottomLeftY, Utils::Color_Red);
 
         //Right & Top polygons
-        Utils::DrawPolygon(topRightX, bottomLeftY, APP_INIT_WINDOW_WIDTH, topRightY, 0, 1, 0);
-        Utils::DrawPolygon(0, topRightY, APP_INIT_WINDOW_WIDTH, APP_INIT_WINDOW_HEIGHT, 1, 0, 0);
+        Utils::DrawPolygon(topRightX, bottomLeftY, APP_INIT_WINDOW_WIDTH, topRightY, Utils::Color_Green);
+        Utils::DrawPolygon(0, topRightY, APP_INIT_WINDOW_WIDTH, APP_INIT_WINDOW_HEIGHT, Utils::Color_Red);
     }
 }
 

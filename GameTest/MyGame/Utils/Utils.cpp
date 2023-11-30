@@ -9,19 +9,26 @@
 
 namespace Utils
 {
-    void DrawPolygon(float sx, float sy, float ex, float ey, float r, float g, float b)
+    // !! Coordinates must be in Pixels !!
+    void DrawPolygon(float _sx, float _sy, float _ex, float _ey, const Color& _col)
     {
 #if APP_USE_VIRTUAL_RES		
-        APP_VIRTUAL_TO_NATIVE_COORDS(sx, sy);
-        APP_VIRTUAL_TO_NATIVE_COORDS(ex, ey);
+        APP_VIRTUAL_TO_NATIVE_COORDS(_sx, _sy);
+        APP_VIRTUAL_TO_NATIVE_COORDS(_ex, _ey);
 #endif
         glBegin(GL_POLYGON);
-        glColor3f(r, g, b); // Yellow
-        glVertex2f(sx, sy);
-        glVertex2f(ex, sy);
-        glVertex2f(ex, ey);
-        glVertex2f(sx, ey);
+        glColor3f(_col.r, _col.g, _col.b); // Yellow
+        glVertex2f(_sx, _sy);
+        glVertex2f(_ex, _sy);
+        glVertex2f(_ex, _ey);
+        glVertex2f(_sx, _ey);
         glEnd();
+    }
+
+    // !! Coordinates must be in Pixels !!
+    void DrawLine(float _sx, float _sy, float _ex, float _ey, const Color& _col)
+    {
+        App::DrawLine(_sx, _sy, _ex, _ey, _col.r, _col.g, _col.b);
     }
 
     const CController* GetFirstActiveController()
@@ -37,5 +44,20 @@ namespace Utils
         }
 
         return NULL;
+    }
+
+    float Clampf(float value, float min, float max)
+    {
+        return (value < min) ? min : (value > max) ? max : value;
+    }
+
+    float DegToRad(float degrees)
+    {
+        return degrees * PI / 180.f;
+    }
+
+    float RadToDeg(float radians)
+    {
+        return radians * 180.f / PI;
     }
 }

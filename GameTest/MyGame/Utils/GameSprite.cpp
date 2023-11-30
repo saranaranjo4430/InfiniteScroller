@@ -6,7 +6,7 @@
 #include "GameSprite.h"
 //------------------------------------------------------------------------
 
-CGameSprite::CGameSprite(const GameViewport& _vp, const char* _fileName, int _columns, int _rows) : m_Vp(_vp)
+CGameSprite::CGameSprite(const char* _fileName, int _columns, int _rows)
 {
     m_BaseSprite = App::CreateSprite(_fileName, _columns, _rows);
 }
@@ -20,9 +20,9 @@ void CGameSprite::Update(float _deltaTime)
 {
     m_BaseSprite->Update(_deltaTime);
 
-    m_BaseSprite->SetPosition(m_Vp.GetX(position.x), m_Vp.GetY(position.y));
-    m_BaseSprite->SetScaleX(m_Vp.GetScaleX(scale.x));
-    m_BaseSprite->SetScaleY(m_Vp.GetScaleY(scale.y));
+    m_BaseSprite->SetPosition(gameVp.GetX(position.x), gameVp.GetY(position.y));
+    m_BaseSprite->SetScaleX(gameVp.GetScaleX(scale.x));
+    m_BaseSprite->SetScaleY(gameVp.GetScaleY(scale.y));
     m_BaseSprite->SetAngle(angle);
 }
 
