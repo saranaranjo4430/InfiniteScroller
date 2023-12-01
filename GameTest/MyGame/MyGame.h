@@ -34,6 +34,7 @@ private:
     Square2D m_RotatingRect;
     Rect2D m_MovingRect;
     Circle2D m_MovingCircle;
+    Circle2D m_StaticCircle;
     //------------------------------------------------------------------------
 
     //------------------------------------------------------------------------

@@ -43,10 +43,10 @@ void MyGame::Init(int width, int height)
     //------------------------------------------------------------------------
     m_RotatingRect = Square2D(Vector2D(0.5f, 0.75f), 0.5f);
     m_MovingRect = Rect2D(Vector2D(0.5f, 0.25f), 0.25f, 0.125f * gameVp.GetRatio());
-    m_MovingCircle = Circle2D(Vector2D(0.5f, 0.5f), 0.25f*0.5f);
+    m_MovingCircle = Circle2D(Vector2D(0.75f, 0.5f), 0.125f);
+    m_StaticCircle = Circle2D(Vector2D(0.25f, 0.5f), 0.125f);
 
     m_RotatingRect.Scale(0.5f);
-    m_MovingRect.Scale(0.5f);
 }
 
 void MyGame::Update(float _deltaTime)
@@ -257,25 +257,29 @@ void MyGame::Render()
     // Example Vectors....
     //------------------------------------------------------------------------
     {
-        bool rectOverlapRect = m_RotatingRect.Overlap(m_MovingRect);
-        bool circleOverlapMovingRect = false; // m_MovingCircle.Overlap(m_MovingRect);
-        bool circleOverlapRotatingRect = false; // m_MovingCircle.Overlap(m_RotatingRect);
+        bool rectOverlapRotatingRect = m_MovingRect.Overlap(m_RotatingRect);
+        bool rectOverlapStaticCircle = m_MovingRect.Overlap(m_StaticCircle);
 
-        (rectOverlapRect || circleOverlapRotatingRect)? m_RotatingRect.Draw(Utils::Color_Grey) : m_RotatingRect.Draw(Utils::Color_Red);
-        (rectOverlapRect || circleOverlapMovingRect)? m_MovingRect.Draw(Utils::Color_Grey) : m_MovingRect.Draw(Utils::Color_Green);
-        (circleOverlapMovingRect || circleOverlapRotatingRect) ? m_MovingCircle.Draw(Utils::Color_Grey) : m_MovingCircle.Draw(Utils::Color_Yellow);
+        bool circleOverlapMovingRect = m_MovingCircle.Overlap(m_MovingRect);
+        bool circleOverlapRotatingRect = m_MovingCircle.Overlap(m_RotatingRect);
+        bool circleOverlapStaticCircle = m_MovingCircle.Overlap(m_StaticCircle);
+
+        (rectOverlapRotatingRect || circleOverlapRotatingRect)? m_RotatingRect.Draw(Utils::Color_Grey) : m_RotatingRect.Draw(Utils::Color_Red);
+        (rectOverlapRotatingRect || circleOverlapMovingRect || rectOverlapStaticCircle)? m_MovingRect.Draw(Utils::Color_Grey) : m_MovingRect.Draw(Utils::Color_Green);
+        (circleOverlapMovingRect || circleOverlapRotatingRect || circleOverlapStaticCircle) ? m_MovingCircle.Draw(Utils::Color_Grey) : m_MovingCircle.Draw(Utils::Color_Yellow);
+        (rectOverlapStaticCircle || circleOverlapStaticCircle) ? m_StaticCircle.Draw(Utils::Color_Grey) : m_StaticCircle.Draw(Utils::Color_White);
 
         float centerX = gameVp.GetX(0.5f);
         float centerY = gameVp.GetY(0.5f);
 
-        Vector2D v1 = Vector2D(0.25f, 0.f);
+        Vector2D v1 = Vector2D(0.25f, 0.f * gameVp.GetRatio());
         Utils::DrawLine(centerX, centerY, centerX + gameVp.GetWidth(v1.x), centerY + gameVp.GetHeight(v1.y), Utils::Color_Red);
 
-        Vector2D v2 = Vector2D(0.f, 0.25f);
-        Utils::DrawLine(centerX, centerY, centerX + gameVp.GetWidth(v2.x), centerY + gameVp.GetHeight(v2.y) * gameVp.GetRatio(), Utils::Color_Green);
+        Vector2D v2 = Vector2D(0.f, 0.25f * gameVp.GetRatio());
+        Utils::DrawLine(centerX, centerY, centerX + gameVp.GetWidth(v2.x), centerY + gameVp.GetHeight(v2.y), Utils::Color_Green);
 
         v1.Rotate(m_RotatingRect.GetRotation());
-        Utils::DrawLine(centerX, centerY, centerX + gameVp.GetWidth(v1.x), centerY + gameVp.GetHeight(v1.y) * gameVp.GetRatio(), Utils::Color_Blue);
+        Utils::DrawLine(centerX, centerY, centerX + gameVp.GetWidth(v1.x), centerY + gameVp.GetHeight(v1.y), Utils::Color_White);
     }
 }
 
