@@ -21,6 +21,13 @@ float Vector2D::GetNorm2() const
     return x * x + y * y;
 }
 
+float Vector2D::Distance(const Vector2D& _other) const
+{
+    Vector2D v = *this - _other;
+    v.y /= gameVp.GetRatio();
+    return v.GetNorm();
+}
+
 void Vector2D::Normalize(float _len)
 {
     float norm = GetNorm();
@@ -30,25 +37,31 @@ void Vector2D::Normalize(float _len)
 
 void Vector2D::Rotate(float _degrees)
 {
-    _degrees = (_degrees > 180.f) ? (_degrees - 180.f) : (_degrees < -180.f) ? (180.f + _degrees) : _degrees;
+    _degrees = (_degrees > 180.f) ? -180.f + (_degrees - 180.f) : (_degrees < -180.f) ? 180.f - (-180.f - _degrees) : _degrees;
 
     float radians = Utils::DegToRad(_degrees);
 
+    //To preserve AspectRatio while rotating
+    y /= gameVp.GetRatio();
+    
     float newX = (x * cosf(radians)) - (y * sinf(radians));
     float newY = (x * sinf(radians)) + (y * cosf(radians));
 
+    //To preserve AspectRatio while rotating
+    newY *= gameVp.GetRatio();
+    
     x = newX;
     y = newY;
 }
 
-float Vector2D::Dot(const Vector2D& _other)
+float Vector2D::Dot(const Vector2D& _other) const
 {
     float dot = x * _other.x + y * _other.y;
     dot = Utils::Clampf(dot, -1.f, 1.f);
     return dot;
 }
 
-float Vector2D::Angle(const Vector2D& _other)
+float Vector2D::Angle(const Vector2D& _other) const
 {
     float dot = Dot(_other);
     float angle = acosf(dot);
@@ -81,7 +94,7 @@ void Rect2D::Move(float _x, float _y)
 
 void Rect2D::Rotate(float _degrees)
 {
-    _degrees = (_degrees > 180.f) ? (_degrees - 180.f) : (_degrees < -180.f) ? (180.f + _degrees) : _degrees;
+    _degrees = (_degrees > 180.f) ? -180.f + (_degrees - 180.f) : (_degrees < -180.f) ? 180.f - (-180.f - _degrees) : _degrees;
 
     if (m_Angle != _degrees)
     {
@@ -182,19 +195,19 @@ bool Rect2D::Overlap(const Rect2D& _other) const
 
 bool Rect2D::Overlap(const Circle2D& _circle) const
 {
-    float radians = Utils::DegToRad(m_Angle);
-
-    float circleX = _circle.GetCenter().x;
-    float circleY = _circle.GetCenter().y;
-
     // Rotate circle's center point back
-    float unrotatedCircleX = cosf(-radians) * (circleX - m_Center.x) - sinf(-radians) * (circleY - m_Center.y) + m_Center.x;
-    float unrotatedCircleY = sinf(-radians) * (circleX - m_Center.x) + cosf(-radians) * (circleY - m_Center.y) + m_Center.y;
+    Vector2D unrotatedCircle = _circle.GetCenter() - m_Center;
+    unrotatedCircle.Rotate(-m_Angle);
+    unrotatedCircle += m_Center;
+
+    /*
+    Circle2D debug = Circle2D(unrotatedCircle, _circle.GetRadius());
+    debug.Draw(Utils::Color_White);
+    */
 
     // Closest point in the rectangle to the center of circle rotated backwards(unrotated)
-    float closestX = unrotatedCircleX;
-    float closestY = unrotatedCircleY;
-
+    Vector2D closest = unrotatedCircle;
+    
     float rectWidth = m_Width * m_Scale;
     float rectHeight = m_Height * m_Scale;
 
@@ -202,30 +215,27 @@ bool Rect2D::Overlap(const Circle2D& _circle) const
     float rectReferenceY = m_Center.y - rectHeight * 0.5f;
 
     // Find the unrotated closest x point from center of unrotated circle
-    if (unrotatedCircleX < rectReferenceX) 
+    if (unrotatedCircle.x < rectReferenceX) 
     {
-        closestX = rectReferenceX;
+        closest.x = rectReferenceX;
     }
-    else if (unrotatedCircleX > rectReferenceX + rectWidth)
+    else if (unrotatedCircle.x > rectReferenceX + rectWidth)
     {
-        closestX = rectReferenceX + rectWidth;
+        closest.x = rectReferenceX + rectWidth;
     }
 
     // Find the unrotated closest y point from center of unrotated circle
-    if (unrotatedCircleY < rectReferenceY) 
+    if (unrotatedCircle.y < rectReferenceY) 
     {
-        closestY = rectReferenceY;
+        closest.y = rectReferenceY;
     }
-    else if (unrotatedCircleY > rectReferenceY + rectHeight)
+    else if (unrotatedCircle.y > rectReferenceY + rectHeight)
     {
-        closestY = rectReferenceY + rectHeight;
+        closest.y = rectReferenceY + rectHeight;
     }
 
     // Determine collision
-    float dX = abs(unrotatedCircleX - closestX);
-    float dY = abs(unrotatedCircleY - closestY) / gameVp.GetRatio();
-    float distance = sqrtf((dX * dX) + (dY * dY));
-
+    float distance = unrotatedCircle.Distance(closest);
     return (distance < _circle.GetRadius());
 }
 
@@ -234,17 +244,14 @@ void Rect2D::ComputePoints()
     Vector2D right = Vector2D(1, 0);
     Vector2D up = Vector2D(0, 1);
 
-    right.Rotate(m_Angle);
-    up.Rotate(m_Angle);
-
     float halfWidth = m_Width * 0.5f * m_Scale;
-    float halfHeight = m_Height * 0.5f * m_Scale / gameVp.GetRatio();
+    float halfHeight = m_Height * 0.5f * m_Scale;
 
     right.Normalize(halfWidth);
     up.Normalize(halfHeight);
-    
-    right.y *= gameVp.GetRatio();
-    up.y *= gameVp.GetRatio();
+
+    right.Rotate(m_Angle);
+    up.Rotate(m_Angle);
 
     m_Points[0] = m_Center - right + up;
     m_Points[1] = m_Center + right + up;
@@ -327,7 +334,7 @@ bool Circle2D::Overlap(const Rect2D& _rect) const
 
 bool Circle2D::Overlap(const Circle2D& _other) const
 {
-    float distance = (m_Center - _other.GetCenter()).GetNorm();
+    float distance = m_Center.Distance(_other.GetCenter());
     return (distance < (m_Radius + _other.GetRadius()));
 }
 

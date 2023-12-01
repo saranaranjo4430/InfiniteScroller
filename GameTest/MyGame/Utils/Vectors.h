@@ -15,12 +15,27 @@ public:
         return Vector2D(x + other.x, y + other.y);
     }
 
+    void operator+=(const Vector2D& other) {
+        x += other.x;
+        y += other.y;
+    }
+
     Vector2D operator*(const float factor) const {
         return Vector2D(x * factor, y * factor);
     }
 
+    void operator*=(const Vector2D& other) {
+        x *= other.x;
+        y *= other.y;
+    }
+
     Vector2D operator-(const Vector2D& other) const {
         return Vector2D(x - other.x, y - other.y);
+    }
+
+    void operator-=(const Vector2D& other) {
+        x -= other.x;
+        y -= other.y;
     }
 
     Vector2D operator-() {
@@ -31,11 +46,11 @@ public:
     float GetNorm2() const;
     
     void Normalize(float _len = 1.f);
-
     void Rotate(float _degrees);
 
-    float Dot(const Vector2D& _other);
-    float Angle(const Vector2D& _other);
+    float Distance(const Vector2D& _other) const;
+    float Dot(const Vector2D& _other) const;
+    float Angle(const Vector2D& _other) const;
 
     float x;
     float y;
