@@ -20,8 +20,8 @@ MyGame::~MyGame()
 void MyGame::Init(int width, int height)
 {
     gameVp.Init(width, height);
-    gameVp.AddFlag(DRAW_VIEWPORT);
-    //m_GameVp.AddFlag(DRAW_BORDERS);
+    gameVp.AddFlag(ViewportFlags::DRAW_VIEWPORT);
+    //m_GameVp.AddFlag(ViewportFlags::DRAW_BORDERS);
 
     //------------------------------------------------------------------------
     // Example Sprite Code....
@@ -29,6 +29,8 @@ void MyGame::Init(int width, int height)
     testSprite = new CGameSprite(".\\TestData\\Test.bmp", 8, 4);
     testSprite->position = Vector2D(0.f, 0.f);
     testSprite->scale = Vector2D(1.f, 1.f);
+    testSprite->SetCollision(CollisionType::BOX, Vector2D(0.5f, 1.f));
+    testSprite->AddFlag(GameSpriteFlags::DRAW_COLLISION);
 
     float speed = 1.0f / 15.0f;
     testSprite->CreateAnimation(ANIM_BACKWARDS, speed, { 0,1,2,3,4,5,6,7 });
@@ -46,7 +48,7 @@ void MyGame::Init(int width, int height)
     m_MovingCircle = Circle2D(Vector2D(0.75f, 0.5f), 0.125f);
     m_StaticCircle = Circle2D(Vector2D(0.25f, 0.5f), 0.125f);
 
-    m_RotatingRect.Scale(0.5f);
+    m_RotatingRect.Scale(0.5f, 0.5f);
 }
 
 void MyGame::Update(float _deltaTime)
@@ -126,7 +128,7 @@ void MyGame::MoveRect(float _deltaTime, const CController* _controller)
         center.y -= VSpeed;
     }
 
-    m_MovingRect.Move(center.x, center.y);
+    m_MovingRect.Move(center);
 
     //Rotation
     float RSpeed = 0.05f * _deltaTime;
@@ -167,12 +169,12 @@ void MyGame::MoveCircle(float _deltaTime, const CController* _controller)
         center.y -= VSpeed;
     }
 
-    m_MovingCircle.Move(center.x, center.y);
+    m_MovingCircle.Move(center);
 }
 
 void MyGame::MoveSprite(float _deltaTime, const CController* _controller)
 {
-    float HSpeed = 0.01f * _deltaTime;
+    float HSpeed = 0.01f;
     float VSpeed = HSpeed * gameVp.GetRatio();
 
     if ((_controller->GetLeftThumbStickX() > 0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
@@ -198,18 +200,20 @@ void MyGame::MoveSprite(float _deltaTime, const CController* _controller)
     if (_controller->CheckButton(XINPUT_GAMEPAD_LEFT_SHOULDER, false))
     {
         testSprite->scale.x += HSpeed;
+        testSprite->scale.y += HSpeed;
     }
     if (_controller->CheckButton(XINPUT_GAMEPAD_RIGHT_SHOULDER, false))
     {
         testSprite->scale.x -= VSpeed;
+        testSprite->scale.y -= VSpeed;
     }
     if (_controller->GetLeftTrigger())
     {
-        testSprite->angle += 0.1f * _controller->GetLeftTrigger();
+        testSprite->angle += 1.f * _controller->GetLeftTrigger();
     }
     if (_controller->GetRightTrigger())
     {
-        testSprite->angle -= 0.1f * _controller->GetRightTrigger();
+        testSprite->angle -= 1.f * _controller->GetRightTrigger();
     }
 
     if (_controller->CheckButton(XINPUT_GAMEPAD_B, true))
@@ -225,7 +229,7 @@ void MyGame::Render()
     //------------------------------------------------------------------------
     // Example Sprite Code....
     //------------------------------------------------------------------------
-    //testSprite->Render();
+    testSprite->Render();
     
     //------------------------------------------------------------------------
     // Example Text.
