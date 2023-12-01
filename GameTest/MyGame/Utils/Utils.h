@@ -1,13 +1,16 @@
 #pragma once
 
+#define safedelete(p) if (p) delete p; p=nullptr;
+
 namespace Utils
 {
     struct Color
     {
-        Color(float _r, float _g, float _b) : r(_r), g(_g), b(_b) {}
+        Color(float _r, float _g, float _b, float _a = 1.f) : r(_r), g(_g), b(_b), a(_a) {}
         float r;
         float g;
         float b;
+        float a;
     };
 
     static Color Color_Red = Color(1, 0, 0);

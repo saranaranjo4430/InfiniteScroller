@@ -72,7 +72,7 @@ float Vector2D::Angle(const Vector2D& _other) const
 // Rectangle 2D
 //***********************************************************************
 
-Rect2D::Rect2D(Vector2D& _center, float _width, float _height)
+Rect2D::Rect2D(const Vector2D& _center, float _width, float _height)
 {
     m_Center = _center;
     m_Width = _width;
@@ -81,12 +81,12 @@ Rect2D::Rect2D(Vector2D& _center, float _width, float _height)
     ComputePoints();
 }
 
-void Rect2D::Move(float _x, float _y)
+void Rect2D::Move(const Vector2D& _pos)
 {
-    if (m_Center.x != _x || m_Center.y != _y)
+    if (m_Center != _pos)
     {
-        m_Center.x = _x;
-        m_Center.y = _y;
+        m_Center.x = _pos.x;
+        m_Center.y = _pos.y;
 
         ComputePoints();
     }
@@ -104,11 +104,12 @@ void Rect2D::Rotate(float _degrees)
     }
 }
 
-void Rect2D::Scale(float _scale)
+void Rect2D::Scale(float _scaleX, float _scaleY)
 {
-    if (m_Scale != _scale)
+    if (m_Scale.x != _scaleX || m_Scale.y != _scaleY)
     {
-        m_Scale = _scale;
+        m_Scale.x = _scaleX;
+        m_Scale.y = _scaleY;
 
         ComputePoints();
     }
@@ -137,13 +138,16 @@ void Rect2D::Draw(const Utils::Color& _color) const
     APP_VIRTUAL_TO_NATIVE_COORDS(dx, dy);
 #endif
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBegin(GL_POLYGON);
-    glColor3f(_color.r, _color.g, _color.b);
+    glColor4f(_color.r, _color.g, _color.b, _color.a);
     glVertex2f(ax, ay);
     glVertex2f(bx, by);
     glVertex2f(cx, cy);
     glVertex2f(dx, dy);
     glEnd();
+    glDisable(GL_BLEND);
 }
 
 bool Rect2D::Overlap(const Rect2D& _other) const
@@ -208,8 +212,8 @@ bool Rect2D::Overlap(const Circle2D& _circle) const
     // Closest point in the rectangle to the center of circle rotated backwards(unrotated)
     Vector2D closest = unrotatedCircle;
     
-    float rectWidth = m_Width * m_Scale;
-    float rectHeight = m_Height * m_Scale;
+    float rectWidth = m_Width * m_Scale.x;
+    float rectHeight = m_Height * m_Scale.y;
 
     float rectReferenceX = m_Center.x - rectWidth * 0.5f;
     float rectReferenceY = m_Center.y - rectHeight * 0.5f;
@@ -244,8 +248,8 @@ void Rect2D::ComputePoints()
     Vector2D right = Vector2D(1, 0);
     Vector2D up = Vector2D(0, 1);
 
-    float halfWidth = m_Width * 0.5f * m_Scale;
-    float halfHeight = m_Height * 0.5f * m_Scale;
+    float halfWidth = m_Width * 0.5f * m_Scale.x;
+    float halfHeight = m_Height * 0.5f * m_Scale.y;
 
     right.Normalize(halfWidth);
     up.Normalize(halfHeight);
@@ -271,19 +275,21 @@ Square2D::Square2D(Vector2D& _center, float _size) : Rect2D(_center, _size, _siz
 // Circle 2D
 //***********************************************************************
 
-Circle2D::Circle2D(Vector2D& _center, float _radius)
+Circle2D::Circle2D(const Vector2D& _center, float _radius)
 {
     m_Center = _center;
     m_Radius = _radius;
 }
 
-void Circle2D::Move(float _x, float _y)
+void Circle2D::Move(const Vector2D& _pos)
 {
-    if (m_Center.x != _x || m_Center.y != _y)
-    {
-        m_Center.x = _x;
-        m_Center.y = _y;
-    }
+    m_Center.x = _pos.x;
+    m_Center.y = _pos.y;
+}
+
+void Circle2D::Scale(const float _scale)
+{
+    m_Scale = _scale;
 }
 
 void Circle2D::Draw(const Utils::Color& _color, int sharpness) const
@@ -296,8 +302,12 @@ void Circle2D::Draw(const Utils::Color& _color, int sharpness) const
 
     float twicePi = 2.0f * PI;
 
+    float radius = GetRadius();
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBegin(GL_TRIANGLE_FAN);
-    glColor3f(_color.r, _color.g, _color.b); // Yellow
+    glColor4f(_color.r, _color.g, _color.b, _color.a); // Yellow
 
     float vx = centerX;
     float vy = centerY;
@@ -311,8 +321,8 @@ void Circle2D::Draw(const Utils::Color& _color, int sharpness) const
     int nbEdges = sharpness * 3;
     for (int i = 0; i <= nbEdges; i++) 
     {
-        float deltaX = m_Radius * cosf(i * twicePi / nbEdges);
-        float deltaY = m_Radius * sinf(i * twicePi / nbEdges);
+        float deltaX = radius * cosf(i * twicePi / nbEdges);
+        float deltaY = radius * sinf(i * twicePi / nbEdges);
 
         vx = centerX + gameVp.GetWidth(deltaX);
         vy = centerY + gameVp.GetHeight(deltaY) * gameVp.GetRatio();
@@ -325,6 +335,7 @@ void Circle2D::Draw(const Utils::Color& _color, int sharpness) const
     }
 
     glEnd();
+    glDisable(GL_BLEND);
 }
 
 bool Circle2D::Overlap(const Rect2D& _rect) const
@@ -335,6 +346,6 @@ bool Circle2D::Overlap(const Rect2D& _rect) const
 bool Circle2D::Overlap(const Circle2D& _other) const
 {
     float distance = m_Center.Distance(_other.GetCenter());
-    return (distance < (m_Radius + _other.GetRadius()));
+    return (distance < (GetRadius() + _other.GetRadius()));
 }
 

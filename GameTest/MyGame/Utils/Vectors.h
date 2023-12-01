@@ -42,6 +42,14 @@ public:
         return Vector2D(-x, -y);
     }
 
+    bool operator!=(const Vector2D& other) {
+        return (x != other.x || y != other.y);
+    }
+
+    bool operator==(const Vector2D& other) {
+        return (x == other.x && y == other.y);
+    }
+
     float GetNorm() const;
     float GetNorm2() const;
     
@@ -60,15 +68,16 @@ class Rect2D
 {
 public:
     Rect2D() {};
-    Rect2D(Vector2D& _center, float _width, float _height);
+    Rect2D(const Vector2D& _center, float _width, float _height);
 
-    void Move(float _x, float _y);
+    void Move(const Vector2D& _pos);
     void Rotate(float _degrees);
-    void Scale(float _scale);
+    void Scale(float _scaleX, float _scaleY);
 
     Vector2D GetCenter() const { return m_Center; }
     float GetRotation() const { return m_Angle; }
-    float GetScale() const { return m_Scale; }
+    float GetScaleX() const { return m_Scale.x; }
+    float GetScaleY() const { return m_Scale.y; }
 
     void Draw(const Utils::Color& _color) const;
     
@@ -83,7 +92,7 @@ private:
     float m_Width = 0.f;
     float m_Height = 0.f;
     float m_Angle = 0.f;
-    float m_Scale = 1.f;
+    Vector2D m_Scale = Vector2D(1.f, 1.f);
 
     Vector2D m_Points[4];
 };
@@ -99,12 +108,13 @@ class Circle2D
 {
 public:
     Circle2D() {};
-    Circle2D(Vector2D& _center, float _radius);
+    Circle2D(const Vector2D& _center, float _radius);
 
-    void Move(float _x, float _y);
+    void Move(const Vector2D& _pos);
+    void Scale(float scale);
 
     Vector2D GetCenter() const { return m_Center; }
-    float GetRadius() const { return m_Radius; }
+    float GetRadius() const { return m_Radius * m_Scale; }
 
     void Draw(const Utils::Color& _color, int sharpness = 10) const;
 
@@ -114,4 +124,5 @@ public:
 private:
     Vector2D m_Center;
     float m_Radius = 0.f;
+    float m_Scale = 1.f;
 };
