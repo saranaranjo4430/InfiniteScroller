@@ -138,7 +138,7 @@ protected:
 private:
     Vector2D m_Center;
     Vector2D m_Scale = Vector2D(1.f, 1.f);
-    float m_Angle;
+    float m_Angle = 0.f;
 };
 
 class Circle2D : public Ellipse2D
