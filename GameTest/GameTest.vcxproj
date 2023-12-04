@@ -183,6 +183,7 @@
     <ClInclude Include="App\SimpleSound.h" />
     <ClInclude Include="App\SimpleSprite.h" />
     <ClInclude Include="MyGame\MyGame.h" />
+    <ClInclude Include="MyGame\UnitTests.h" />
     <ClInclude Include="MyGame\Utils\GameSprite.h" />
     <ClInclude Include="MyGame\Utils\GameViewport.h" />
     <ClInclude Include="MyGame\Utils\Utils.h" />
@@ -199,6 +200,7 @@
     <ClCompile Include="App\SimpleSprite.cpp" />
     <ClCompile Include="GameTest.cpp" />
     <ClCompile Include="MyGame\MyGame.cpp" />
+    <ClCompile Include="MyGame\UnitTests.cpp" />
     <ClCompile Include="MyGame\Utils\GameSprite.cpp" />
     <ClCompile Include="MyGame\Utils\GameViewport.cpp" />
     <ClCompile Include="MyGame\Utils\Utils.cpp" />

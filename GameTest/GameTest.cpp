@@ -8,18 +8,29 @@
 //------------------------------------------------------------------------
 #include "app\app.h"
 //------------------------------------------------------------------------
+#include "MyGame\UnitTests.h"
 #include "MyGame\MyGame.h"
 
 //------------------------------------------------------------------------
 MyGame* myGame;
+UnitTests* unitTests;
+bool useUnitTests = true;
 
 //------------------------------------------------------------------------
 // Called before first update. Do any initial setup here.
 //------------------------------------------------------------------------
 void Init()
 {
-	myGame = new MyGame();
-	myGame->Init(432, 768);
+	if (useUnitTests)
+	{
+		unitTests = new UnitTests();
+		unitTests->Init(432, 768);
+	}
+	else
+	{
+        myGame = new MyGame();
+        myGame->Init(432, 768);
+	}
 }
 
 //------------------------------------------------------------------------
@@ -28,7 +39,14 @@ void Init()
 //------------------------------------------------------------------------
 void Update(float deltaTime)
 {
-	myGame->Update(deltaTime);
+	if (useUnitTests)
+	{
+		unitTests->Update(deltaTime);
+	}
+	else
+	{
+		myGame->Update(deltaTime);
+	}
 }
 
 //------------------------------------------------------------------------
@@ -37,7 +55,14 @@ void Update(float deltaTime)
 //------------------------------------------------------------------------
 void Render()
 {	
-	myGame->Render();
+	if (useUnitTests)
+	{
+		unitTests->Render();
+	}
+	else
+	{
+		myGame->Render();
+	}
 }
 //------------------------------------------------------------------------
 // Add your shutdown code here. Called when the APP_QUIT_KEY is pressed.
@@ -45,6 +70,13 @@ void Render()
 //------------------------------------------------------------------------
 void Shutdown()
 {	
-	myGame->Shutdown();
+	if (useUnitTests)
+	{
+		unitTests->Shutdown();
+	}
+	else
+	{
+		myGame->Shutdown();
+	}
 }
 

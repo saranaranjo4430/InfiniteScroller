@@ -1,6 +1,7 @@
 #pragma once
 
 #define safedelete(p) if (p) delete p; p=nullptr;
+#define STICK_THRESHOLD 0.2f
 
 namespace Utils
 {

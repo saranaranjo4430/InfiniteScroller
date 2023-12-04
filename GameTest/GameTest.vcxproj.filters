@@ -36,6 +36,9 @@
     <ClCompile Include="MyGame\Utils\Vectors.cpp">
       <Filter>MyGame\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="MyGame\UnitTests.cpp">
+      <Filter>MyGame</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -77,6 +80,9 @@
     </ClInclude>
     <ClInclude Include="MyGame\Utils\GameViewport.h">
       <Filter>MyGame\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="MyGame\UnitTests.h">
+      <Filter>MyGame</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
