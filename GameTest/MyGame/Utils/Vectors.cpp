@@ -11,12 +11,12 @@
 // Vector 2D
 //***********************************************************************
 
-float Vector2D::GetNorm() const 
+float Vector2D::GetNorm() const
 {
     return sqrtf(GetNorm2());
 }
 
-float Vector2D::GetNorm2() const 
+float Vector2D::GetNorm2() const
 {
     return x * x + y * y;
 }
@@ -43,13 +43,13 @@ void Vector2D::Rotate(float _degrees)
 
     //To preserve AspectRatio while rotating
     y /= gameVp.GetRatio();
-    
+
     float newX = (x * cosf(radians)) - (y * sinf(radians));
     float newY = (x * sinf(radians)) + (y * cosf(radians));
 
     //To preserve AspectRatio while rotating
     newY *= gameVp.GetRatio();
-    
+
     x = newX;
     y = newY;
 }
@@ -68,6 +68,13 @@ float Vector2D::Angle(const Vector2D& _other) const
     return Utils::RadToDeg(angle);
 }
 
+void Vector2D::Draw(const Vector2D& _center, const Utils::Color& _color) const
+{
+    float centerX = gameVp.GetX(_center.x);
+    float centerY = gameVp.GetY(_center.y);
+    Utils::DrawLine(centerX, centerY, centerX + gameVp.GetWidth(x), centerY + gameVp.GetHeight(y), _color);
+}
+
 //***********************************************************************
 // Rectangle 2D
 //***********************************************************************
@@ -77,7 +84,7 @@ Rect2D::Rect2D(const Vector2D& _center, float _width, float _height)
     m_Center = _center;
     m_Width = _width;
     m_Height = _height;
-    
+
     ComputePoints();
 }
 
@@ -129,7 +136,7 @@ void Rect2D::Draw(const Utils::Color& _color) const
 
     float dx = gameVp.GetX(m_Points[3].x);
     float dy = gameVp.GetY(m_Points[3].y);
-        
+
     //Draw
 #if APP_USE_VIRTUAL_RES
     APP_VIRTUAL_TO_NATIVE_COORDS(ax, ay);
@@ -197,21 +204,23 @@ bool Rect2D::Overlap(const Rect2D& _other) const
     return true;
 }
 
-bool Rect2D::Overlap(const Circle2D& _circle) const
+bool Rect2D::Overlap(const Ellipse2D& _ellipse) const
 {
     // Rotate circle's center point back
-    Vector2D unrotatedCircle = _circle.GetCenter() - m_Center;
+    Vector2D unrotatedCircle = _ellipse.GetCenter() - m_Center;
     unrotatedCircle.Rotate(-m_Angle);
     unrotatedCircle += m_Center;
 
     /*
-    Circle2D debug = Circle2D(unrotatedCircle, _circle.GetRadius());
+    Ellipse2D debug = _ellipse;
+    debug.Move(unrotatedCircle);
+    debug.Rotate(m_Angle);
     debug.Draw(Utils::Color_White);
     */
 
     // Closest point in the rectangle to the center of circle rotated backwards(unrotated)
-    Vector2D closest = unrotatedCircle;
-    
+    Vector2D unrotatedClosest = unrotatedCircle;
+
     float rectWidth = m_Width * m_Scale.x;
     float rectHeight = m_Height * m_Scale.y;
 
@@ -219,28 +228,34 @@ bool Rect2D::Overlap(const Circle2D& _circle) const
     float rectReferenceY = m_Center.y - rectHeight * 0.5f;
 
     // Find the unrotated closest x point from center of unrotated circle
-    if (unrotatedCircle.x < rectReferenceX) 
+    if (unrotatedCircle.x < rectReferenceX)
     {
-        closest.x = rectReferenceX;
+        unrotatedClosest.x = rectReferenceX;
     }
     else if (unrotatedCircle.x > rectReferenceX + rectWidth)
     {
-        closest.x = rectReferenceX + rectWidth;
+        unrotatedClosest.x = rectReferenceX + rectWidth;
     }
 
     // Find the unrotated closest y point from center of unrotated circle
-    if (unrotatedCircle.y < rectReferenceY) 
+    if (unrotatedCircle.y < rectReferenceY)
     {
-        closest.y = rectReferenceY;
+        unrotatedClosest.y = rectReferenceY;
     }
     else if (unrotatedCircle.y > rectReferenceY + rectHeight)
     {
-        closest.y = rectReferenceY + rectHeight;
+        unrotatedClosest.y = rectReferenceY + rectHeight;
     }
 
+    // Come back to rotated space to get the ellipse directional vector
+    Vector2D closest = unrotatedClosest - GetCenter();
+    closest.Rotate(m_Angle);
+    closest += GetCenter();
+    Vector2D ellipseToRect = closest - _ellipse.GetCenter();
+    
     // Determine collision
-    float distance = unrotatedCircle.Distance(closest);
-    return (distance < _circle.GetRadius());
+    float distance = unrotatedCircle.Distance(unrotatedClosest);
+    return (distance <= _ellipse.GetRadius(ellipseToRect));
 }
 
 void Rect2D::ComputePoints()
@@ -271,28 +286,59 @@ Square2D::Square2D(Vector2D& _center, float _size) : Rect2D(_center, _size, _siz
 {
 }
 
+void Square2D::Scale(float _scale) 
+{ 
+    return Scale(_scale, _scale); 
+}
+
+float Square2D::GetScale() const 
+{ 
+    return GetScaleX(); 
+}
+
 //***********************************************************************
-// Circle 2D
+// Ellipse 2D
 //***********************************************************************
 
-Circle2D::Circle2D(const Vector2D& _center, float _radius)
+Ellipse2D::Ellipse2D(const Vector2D& _center, float _radius)
 {
     m_Center = _center;
     m_Radius = _radius;
 }
 
-void Circle2D::Move(const Vector2D& _pos)
+void Ellipse2D::Move(const Vector2D& _pos)
 {
     m_Center.x = _pos.x;
     m_Center.y = _pos.y;
 }
 
-void Circle2D::Scale(const float _scale)
+void Ellipse2D::Rotate(float _degrees)
 {
-    m_Scale = _scale;
+    m_Angle = _degrees;
 }
 
-void Circle2D::Draw(const Utils::Color& _color, int sharpness) const
+void Ellipse2D::Scale(float _scaleX, float _scaleY)
+{
+    m_Scale.x = _scaleX;
+    m_Scale.y = _scaleY;
+}
+
+float Ellipse2D::GetRadius(const Vector2D& _direction) const
+{
+    if (_direction.GetNorm() < Utils::Epsilon())
+    {
+        return min(m_Radius * m_Scale.x, m_Radius * m_Scale.y);
+    }
+
+    Vector2D dir = _direction;
+    dir.Rotate(-m_Angle);
+    dir.Normalize();
+    dir.x *= m_Radius * m_Scale.x;
+    dir.y *= m_Radius * m_Scale.y;
+    return dir.GetNorm();
+}
+
+void Ellipse2D::Draw(const Utils::Color& _color, int sharpness) const
 {
     if (sharpness <= 0)
         return;
@@ -302,7 +348,7 @@ void Circle2D::Draw(const Utils::Color& _color, int sharpness) const
 
     float twicePi = 2.0f * PI;
 
-    float radius = GetRadius();
+    float baseAngle = Utils::DegToRad(m_Angle);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -319,13 +365,18 @@ void Circle2D::Draw(const Utils::Color& _color, int sharpness) const
     glVertex2f(vx, vy);
 
     int nbEdges = sharpness * 3;
-    for (int i = 0; i <= nbEdges; i++) 
+    for (int i = 0; i <= nbEdges; i++)
     {
-        float deltaX = radius * cosf(i * twicePi / nbEdges);
-        float deltaY = radius * sinf(i * twicePi / nbEdges);
+        float angle = i * twicePi / nbEdges;
 
-        vx = centerX + gameVp.GetWidth(deltaX);
-        vy = centerY + gameVp.GetHeight(deltaY) * gameVp.GetRatio();
+        float deltaX = cosf(angle) * m_Radius * m_Scale.x;
+        float deltaY = sinf(angle) * m_Radius * m_Scale.y;
+
+        float newX = (deltaX * cosf(baseAngle)) - (deltaY * sinf(baseAngle));
+        float newY = (deltaX * sinf(baseAngle)) + (deltaY * cosf(baseAngle));
+        
+        vx = centerX + gameVp.GetWidth(newX);
+        vy = centerY + gameVp.GetHeight(newY) * gameVp.GetRatio();
 
 #if APP_USE_VIRTUAL_RES
         APP_VIRTUAL_TO_NATIVE_COORDS(vx, vy);
@@ -338,14 +389,33 @@ void Circle2D::Draw(const Utils::Color& _color, int sharpness) const
     glDisable(GL_BLEND);
 }
 
-bool Circle2D::Overlap(const Rect2D& _rect) const
+bool Ellipse2D::Overlap(const Rect2D& _rect) const
 {
     return _rect.Overlap(*this);
 }
 
-bool Circle2D::Overlap(const Circle2D& _other) const
+bool Ellipse2D::Overlap(const Ellipse2D& _other) const
 {
     float distance = m_Center.Distance(_other.GetCenter());
-    return (distance < (GetRadius() + _other.GetRadius()));
+    Vector2D dir = m_Center - _other.GetCenter();
+    return (distance <= (GetRadius(-dir) + _other.GetRadius(dir)));
 }
 
+//***********************************************************************
+// Circle 2D
+//***********************************************************************
+
+Circle2D::Circle2D(const Vector2D& _center, float _radius) : Ellipse2D(_center, _radius)
+{
+
+}
+
+void Circle2D::Scale(float _scale) 
+{ 
+    Scale(_scale, _scale);
+}
+
+float Circle2D::GetRadius() const
+{
+    return m_Radius;
+}
