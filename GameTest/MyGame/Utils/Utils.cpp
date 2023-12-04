@@ -60,4 +60,15 @@ namespace Utils
     {
         return radians * 180.f / PI;
     }
+
+    float Random(float fMin, float fMax)
+    {
+        double f = (double)rand() / RAND_MAX;
+        return (float)(fMin + f * (fMax - fMin));
+    }
+
+    float Epsilon()
+    {
+        return std::numeric_limits<float>::epsilon();
+    }
 }

@@ -5,6 +5,8 @@
 
 class CGameSprite;
 
+#define STICK_THRESHOLD 0.2f
+
 class MyGame
 {
 public:

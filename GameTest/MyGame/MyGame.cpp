@@ -27,9 +27,9 @@ void MyGame::Init(int width, int height)
     // Example Sprite Code....
     //------------------------------------------------------------------------
     testSprite = new CGameSprite(".\\TestData\\Test.bmp", 8, 4);
-    testSprite->position = Vector2D(0.f, 0.f);
+    testSprite->position = Vector2D(0.25f, 0.25f);
     testSprite->scale = Vector2D(1.f, 1.f);
-    testSprite->SetCollision(CollisionType::BOX, Vector2D(0.5f, 1.f));
+    testSprite->SetCollision(CollisionType::CIRCLE, Vector2D(0.5f, 1.f));
     testSprite->AddFlag(GameSpriteFlags::DRAW_COLLISION);
 
     float speed = 1.0f / 15.0f;
@@ -44,11 +44,11 @@ void MyGame::Init(int width, int height)
     // Example of vectors....
     //------------------------------------------------------------------------
     m_RotatingRect = Square2D(Vector2D(0.5f, 0.75f), 0.5f);
-    m_MovingRect = Rect2D(Vector2D(0.5f, 0.25f), 0.25f, 0.125f * gameVp.GetRatio());
+    m_MovingRect = Rect2D(Vector2D(0.75f, 0.25f), 0.25f, 0.125f * gameVp.GetRatio());
     m_MovingCircle = Circle2D(Vector2D(0.75f, 0.5f), 0.125f);
     m_StaticCircle = Circle2D(Vector2D(0.25f, 0.5f), 0.125f);
 
-    m_RotatingRect.Scale(0.5f, 0.5f);
+    m_RotatingRect.Scale(0.5f);
 }
 
 void MyGame::Update(float _deltaTime)
@@ -59,25 +59,18 @@ void MyGame::Update(float _deltaTime)
     // Example Sprite Code....
     //------------------------------------------------------------------------
     testSprite->Update(_deltaTime);
-
-    const CController* pController = Utils::GetFirstActiveController();
-    if (!pController)
-    {
-        testSprite->SetAnimation(-1);
-    }
     
     //------------------------------------------------------------------------
     // Example Vectors....
     //------------------------------------------------------------------------
-    {
-        float angle = m_RotatingRect.GetRotation();
-        angle += 0.0125f * _deltaTime;
-        m_RotatingRect.Rotate(angle);
-    }
+    float angle = m_RotatingRect.GetRotation();
+    angle += 0.0125f * _deltaTime;
+    m_RotatingRect.Rotate(angle);
 
     //------------------------------------------------------------------------
     // Example Controls....
     //------------------------------------------------------------------------
+    const CController* pController = Utils::GetFirstActiveController();
     if (pController)
     {
         if (pController->CheckButton(XINPUT_GAMEPAD_A, true))
@@ -88,17 +81,21 @@ void MyGame::Update(float _deltaTime)
         switch(m_MoveState)
         {
         case 0:
+            MoveSprite(_deltaTime, pController);
+            break;
+        
+        case 1:
             MoveRect(_deltaTime, pController);
             break;
 
-        case 1:
+        case 2:
             MoveCircle(_deltaTime, pController);
             break;
-
-        case 2:
-            MoveSprite(_deltaTime, pController);
-            break;
         }
+    }
+    else
+    {
+        testSprite->SetAnimation(-1);
     }
 }
 
@@ -108,37 +105,25 @@ void MyGame::MoveRect(float _deltaTime, const CController* _controller)
     float angle = m_MovingRect.GetRotation();
 
     //Position
-    float HSpeed = 0.01f;
+    float HSpeed = 0.75f * _deltaTime / 1000.f;
     float VSpeed = HSpeed * gameVp.GetRatio();
 
-    if ((_controller->GetLeftThumbStickX() > 0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
+    if (_controller->GetLeftThumbStickX() > STICK_THRESHOLD || _controller->GetLeftThumbStickX() < -STICK_THRESHOLD)
     {
-        center.x += HSpeed;
+        center.x += HSpeed * _controller->GetLeftThumbStickX();
     }
-    if ((_controller->GetLeftThumbStickX() < -0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
+    if (_controller->GetLeftThumbStickY() > STICK_THRESHOLD || _controller->GetLeftThumbStickY() < -STICK_THRESHOLD)
     {
-        center.x -= HSpeed;
-    }
-    if ((_controller->GetLeftThumbStickY() > 0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
-    {
-        center.y += VSpeed;
-    }
-    if ((_controller->GetLeftThumbStickY() < -0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
-    {
-        center.y -= VSpeed;
+        center.y += VSpeed * _controller->GetLeftThumbStickY();
     }
 
     m_MovingRect.Move(center);
 
     //Rotation
-    float RSpeed = 0.05f * _deltaTime;
-    if (_controller->GetRightThumbStickX() > 0.5f)
+    float RSpeed = 20.f * _deltaTime / 1000.f;
+    if (_controller->GetRightThumbStickX() > STICK_THRESHOLD || _controller->GetRightThumbStickX() < -STICK_THRESHOLD)
     {
-        angle -= RSpeed;
-    }
-    if (_controller->GetRightThumbStickX() < -0.5f)
-    {
-        angle += RSpeed;
+        angle += RSpeed * _controller->GetRightThumbStickX();
     }
 
     m_MovingRect.Rotate(angle);
@@ -149,53 +134,45 @@ void MyGame::MoveCircle(float _deltaTime, const CController* _controller)
     Vector2D center = m_MovingCircle.GetCenter();
     
     //Position
-    float HSpeed = 0.01f;
+    float HSpeed = 0.75f * _deltaTime / 1000.f;
     float VSpeed = HSpeed * gameVp.GetRatio();
 
-    if ((_controller->GetLeftThumbStickX() > 0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
+    if (_controller->GetLeftThumbStickX() > STICK_THRESHOLD || _controller->GetLeftThumbStickX() < -STICK_THRESHOLD)
     {
-        center.x += HSpeed;
+        center.x += HSpeed * _controller->GetLeftThumbStickX();
     }
-    if ((_controller->GetLeftThumbStickX() < -0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
+    if (_controller->GetLeftThumbStickY() > STICK_THRESHOLD || _controller->GetLeftThumbStickY() < -STICK_THRESHOLD)
     {
-        center.x -= HSpeed;
+        center.y += VSpeed * _controller->GetLeftThumbStickY();
     }
-    if ((_controller->GetLeftThumbStickY() > 0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
-    {
-        center.y += VSpeed;
-    }
-    if ((_controller->GetLeftThumbStickY() < -0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
-    {
-        center.y -= VSpeed;
-    }
-
+    
     m_MovingCircle.Move(center);
 }
 
 void MyGame::MoveSprite(float _deltaTime, const CController* _controller)
 {
-    float HSpeed = 0.01f;
+    float HSpeed = 0.75f * _deltaTime / 1000.f;
     float VSpeed = HSpeed * gameVp.GetRatio();
 
-    if ((_controller->GetLeftThumbStickX() > 0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
+    if (_controller->GetLeftThumbStickX() > STICK_THRESHOLD)
     {
         testSprite->SetAnimation(ANIM_RIGHT);
-        testSprite->position.x += HSpeed;
+        testSprite->position.x += HSpeed * _controller->GetLeftThumbStickX();
     }
-    if ((_controller->GetLeftThumbStickX() < -0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
+    if (_controller->GetLeftThumbStickX() < -STICK_THRESHOLD)
     {
         testSprite->SetAnimation(ANIM_LEFT);
-        testSprite->position.x -= HSpeed;
+        testSprite->position.x += HSpeed * _controller->GetLeftThumbStickX();
     }
-    if ((_controller->GetLeftThumbStickY() > 0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
+    if (_controller->GetLeftThumbStickY() > STICK_THRESHOLD)
     {
         testSprite->SetAnimation(ANIM_FORWARDS);
-        testSprite->position.y += VSpeed;
+        testSprite->position.y += VSpeed * _controller->GetLeftThumbStickY();
     }
-    if ((_controller->GetLeftThumbStickY() < -0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
+    if (_controller->GetLeftThumbStickY() < -STICK_THRESHOLD)
     {
         testSprite->SetAnimation(ANIM_BACKWARDS);
-        testSprite->position.y -= VSpeed;
+        testSprite->position.y += VSpeed * _controller->GetLeftThumbStickY();
     }
     if (_controller->CheckButton(XINPUT_GAMEPAD_LEFT_SHOULDER, false))
     {
@@ -207,11 +184,11 @@ void MyGame::MoveSprite(float _deltaTime, const CController* _controller)
         testSprite->scale.x -= VSpeed;
         testSprite->scale.y -= VSpeed;
     }
-    if (_controller->GetLeftTrigger())
+    if (_controller->GetLeftTrigger() > STICK_THRESHOLD)
     {
         testSprite->angle += 1.f * _controller->GetLeftTrigger();
     }
-    if (_controller->GetRightTrigger())
+    if (_controller->GetRightTrigger() > STICK_THRESHOLD)
     {
         testSprite->angle -= 1.f * _controller->GetRightTrigger();
     }
@@ -232,30 +209,11 @@ void MyGame::Render()
     testSprite->Render();
     
     //------------------------------------------------------------------------
-    // Example Text.
+    // Example Text....
     //------------------------------------------------------------------------
-    //App::Print(100, 100, "Sample Text");
-
-    //------------------------------------------------------------------------
-    // Example Line Drawing.
-    //------------------------------------------------------------------------
-    /*
-    static float a = 0.0f;
-    float r = 1.0f;
-    float g = 1.0f;
-    float b = 1.0f;
-    a += 0.1f;
-    for (int i = 0; i < 20; i++)
-    {
-        float sx = 200 + sinf(a + i * 0.1f) * 60.0f;
-        float sy = 200 + cosf(a + i * 0.1f) * 60.0f;
-        float ex = 700 - sinf(a + i * 0.1f) * 60.0f;
-        float ey = 700 - cosf(a + i * 0.1f) * 60.0f;
-        g = (float)i / 20.0f;
-        b = (float)i / 20.0f;
-        App::DrawLine(sx, sy, ex, ey, r, g, b);
-    }
-    */
+    float x = gameVp.GetX(0.5f);
+    float y = gameVp.GetY(0.95f);
+    App::Print(x, y, "My Super Game");
 
     //------------------------------------------------------------------------
     // Example Vectors....
@@ -263,27 +221,31 @@ void MyGame::Render()
     {
         bool rectOverlapRotatingRect = m_MovingRect.Overlap(m_RotatingRect);
         bool rectOverlapStaticCircle = m_MovingRect.Overlap(m_StaticCircle);
-
+        
         bool circleOverlapMovingRect = m_MovingCircle.Overlap(m_MovingRect);
         bool circleOverlapRotatingRect = m_MovingCircle.Overlap(m_RotatingRect);
         bool circleOverlapStaticCircle = m_MovingCircle.Overlap(m_StaticCircle);
 
-        (rectOverlapRotatingRect || circleOverlapRotatingRect)? m_RotatingRect.Draw(Utils::Color_Grey) : m_RotatingRect.Draw(Utils::Color_Red);
-        (rectOverlapRotatingRect || circleOverlapMovingRect || rectOverlapStaticCircle)? m_MovingRect.Draw(Utils::Color_Grey) : m_MovingRect.Draw(Utils::Color_Green);
-        (circleOverlapMovingRect || circleOverlapRotatingRect || circleOverlapStaticCircle) ? m_MovingCircle.Draw(Utils::Color_Grey) : m_MovingCircle.Draw(Utils::Color_Yellow);
-        (rectOverlapStaticCircle || circleOverlapStaticCircle) ? m_StaticCircle.Draw(Utils::Color_Grey) : m_StaticCircle.Draw(Utils::Color_White);
+        bool spriteOverlapRotatingRect = testSprite->Overlap(m_RotatingRect);
+        bool spriteOverlapStaticCircle = testSprite->Overlap(m_StaticCircle);
+        bool spriteOverlapMovingRect = testSprite->Overlap(m_MovingRect);
+        bool spriteOverlapMovingCircle = testSprite->Overlap(m_MovingCircle);
 
-        float centerX = gameVp.GetX(0.5f);
-        float centerY = gameVp.GetY(0.5f);
+        (rectOverlapRotatingRect || circleOverlapRotatingRect || spriteOverlapRotatingRect)? m_RotatingRect.Draw(Utils::Color_Grey) : m_RotatingRect.Draw(Utils::Color_Red);
+        (rectOverlapRotatingRect || circleOverlapMovingRect || rectOverlapStaticCircle || spriteOverlapMovingRect)? m_MovingRect.Draw(Utils::Color_Grey) : m_MovingRect.Draw(Utils::Color_Green);
+        (circleOverlapMovingRect || circleOverlapRotatingRect || circleOverlapStaticCircle || spriteOverlapMovingCircle) ? m_MovingCircle.Draw(Utils::Color_Grey) : m_MovingCircle.Draw(Utils::Color_Yellow);
+        (rectOverlapStaticCircle || circleOverlapStaticCircle || spriteOverlapStaticCircle) ? m_StaticCircle.Draw(Utils::Color_Grey) : m_StaticCircle.Draw(Utils::Color_White);
+
+        Vector2D center = Vector2D(0.5f, 0.5f);
 
         Vector2D v1 = Vector2D(0.25f, 0.f * gameVp.GetRatio());
-        Utils::DrawLine(centerX, centerY, centerX + gameVp.GetWidth(v1.x), centerY + gameVp.GetHeight(v1.y), Utils::Color_Red);
+        v1.Draw(center, Utils::Color_Red);
 
         Vector2D v2 = Vector2D(0.f, 0.25f * gameVp.GetRatio());
-        Utils::DrawLine(centerX, centerY, centerX + gameVp.GetWidth(v2.x), centerY + gameVp.GetHeight(v2.y), Utils::Color_Green);
+        v2.Draw(center, Utils::Color_Green);
 
         v1.Rotate(m_RotatingRect.GetRotation());
-        Utils::DrawLine(centerX, centerY, centerX + gameVp.GetWidth(v1.x), centerY + gameVp.GetHeight(v1.y), Utils::Color_White);
+        v1.Draw(center, Utils::Color_White);
     }
 }
 

@@ -37,11 +37,11 @@ public:
     inline bool HasFlag(GameSpriteFlags flags) { return (m_Flags & flags); }
 
     //Collisions
-    void SetCollision(const CollisionType& type, const Vector2D& scaleModifier);
+    void SetCollision(const CollisionType& type, const Vector2D& scale = Vector2D(1.f, 1.f));
 
     bool Overlap(const CGameSprite* _other) const;
     bool Overlap(const Rect2D& _other) const;
-    bool Overlap(const Circle2D& _other) const;
+    bool Overlap(const Ellipse2D& _other) const;
 
     //Overrides
     void SetAnimation(int id);
@@ -56,7 +56,8 @@ private:
     CSimpleSprite* m_BaseSprite = nullptr;
 
     Rect2D* m_CollisionBox = nullptr;
-    Circle2D* m_CollisionCircle = nullptr;
+    Ellipse2D* m_CollisionCircle = nullptr;
+    Vector2D m_CollisionScale = Vector2D(1.f, 1.f);
 
     int m_Flags = 0;
 };

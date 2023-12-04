@@ -13,7 +13,7 @@ CGameSprite::CGameSprite(const char* _fileName, int _columns, int _rows)
 
     SetCollision(CollisionType::BOX, Vector2D(1.f, 1.f));
 }
-    
+
 CGameSprite::~CGameSprite()
 {
     safedelete(m_BaseSprite);
@@ -33,13 +33,14 @@ void CGameSprite::Update(float _deltaTime)
     if (m_CollisionBox)
     {
         m_CollisionBox->Move(position);
-        m_CollisionBox->Scale(scale.x, scale.y);
+        m_CollisionBox->Scale(scale.x * m_CollisionScale.x, scale.y * m_CollisionScale.y);
         m_CollisionBox->Rotate(angle);
     }
     else if (m_CollisionCircle)
     {
         m_CollisionCircle->Move(position);
-        m_CollisionCircle->Scale(max(scale.x, scale.y));
+        m_CollisionCircle->Scale(scale.x * m_CollisionScale.x, scale.y * m_CollisionScale.y);
+        m_CollisionCircle->Rotate(angle);
     }
 }
 
@@ -70,7 +71,7 @@ void CGameSprite::CreateAnimation(unsigned int id, float speed, const std::vecto
     m_BaseSprite->CreateAnimation(id, speed, frames);
 }
 
-void CGameSprite::SetCollision(const CollisionType& type, const Vector2D& scaleModifier)
+void CGameSprite::SetCollision(const CollisionType& type, const Vector2D& scale)
 {
     safedelete(m_CollisionBox);
     safedelete(m_CollisionCircle);
@@ -78,18 +79,18 @@ void CGameSprite::SetCollision(const CollisionType& type, const Vector2D& scaleM
     float width = m_BaseSprite->GetWidth() / gameVp.GetWidth(1.f);
     float height = m_BaseSprite->GetHeight() / gameVp.GetHeight(1.f);
 
-    switch(type)
+    switch (type)
     {
     case CollisionType::BOX:
-        width *= scaleModifier.x;
-        height *= scaleModifier.y;
         m_CollisionBox = new Rect2D(Vector2D(0, 0), width, height);
+        m_CollisionScale = scale;
         break;
 
     case CollisionType::CIRCLE:
-        
-        float radius = max(width, height) * 0.5f * scaleModifier.x;
+
+        float radius = max(width, height) * 0.5f;
         m_CollisionCircle = new Circle2D(Vector2D(0, 0), radius);
+        m_CollisionScale = scale;
         break;
     }
 }
@@ -120,7 +121,7 @@ bool CGameSprite::Overlap(const Rect2D& _other) const
     return false;
 }
 
-bool CGameSprite::Overlap(const Circle2D& _other) const
+bool CGameSprite::Overlap(const Ellipse2D& _other) const
 {
     if (m_CollisionBox)
     {
