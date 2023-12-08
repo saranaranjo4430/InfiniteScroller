@@ -23,6 +23,7 @@ public:
     //Overrides
     void SetAnimation(int id);
     void CreateAnimation(unsigned int id, float speed, const std::vector<int>& frames);
+    void SetPosition(float x, float y);
 
 public:
     Vector2D position = Vector2D(0.5f, 0.5f);

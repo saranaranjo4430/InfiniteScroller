@@ -5,9 +5,13 @@
 
 #include "Utils\Utils.h"
 #include "Utils\GameSprite.h"
+#include "Utils\GameViewport.h"
+#include "Utils\Vectors.h"
 
 #include "MyGame.h"
 //------------------------------------------------------------------------
+
+
 
 MyGame::MyGame() 
 {
@@ -19,13 +23,24 @@ MyGame::~MyGame()
 
 void MyGame::Init(int width, int height)
 {
+
     m_GameVp.Init(width, height);
     m_GameVp.AddFlag(DRAW_VIEWPORT);
     m_GameVp.AddFlag(DRAW_BORDERS);
     float speed = 1.0f / 15.0f;
 
     //Background 
-    backgroundSprite = new CGameSprite(m_GameVp, ".\\TestData\\Background3.bmp", 1, 1);
+    backgroundSprite1 = new CGameSprite(m_GameVp, ".\\TestData\\Backgroundmasgrande.bmp", 1, 1);
+    backgroundSprite1->CreateAnimation(FALL, speed, { 0 });
+    backgroundSprite2 = new CGameSprite(m_GameVp, ".\\TestData\\Backgroundmasgrande.bmp", 1, 1);
+    backgroundSprite2->CreateAnimation(FALL, speed, { 0 });
+    backgroundSprite3 = new CGameSprite(m_GameVp, ".\\TestData\\Background2.bmp", 1, 1);
+    //backgroundSprite3->CreateAnimation(FALL, speed, { 0 });
+    
+    // 
+    //position background init
+    backgroundSprite2->position = Vector2D(0.5f, 1.47f);
+    //backgroundSprite3->position = Vector2D(0.5f, 2.5f);
 
     //init lasers 1
     greenlaser1Sprite = new CGameSprite(m_GameVp, ".\\TestData\\green_laser1.bmp", 1, 1);
@@ -50,7 +65,7 @@ void MyGame::Init(int width, int height)
     purplelaser3Sprite = new CGameSprite(m_GameVp, ".\\TestData\\purple_laser3.bmp", 1, 1);
     redlaser3Sprite = new CGameSprite(m_GameVp, ".\\TestData\\red_laser3.bmp", 1, 1);
     yellowlaser3Sprite = new CGameSprite(m_GameVp, ".\\TestData\\yellow_laser3.bmp", 1, 1);
-
+    
 
     //Init positions of lasers 
     
@@ -78,7 +93,7 @@ void MyGame::Init(int width, int height)
     
     yellowlaser1Sprite->position = Vector2D(0.6f, 1.f);
     yellowlaser1Sprite->CreateAnimation(FALL, speed, { 0 });
-
+    
     //------------------------------------------------------------------------
     // Example Sprite Code....
     testSprite = new CGameSprite(m_GameVp, ".\\TestData\\Test.bmp", 8, 4);
@@ -100,10 +115,43 @@ void MyGame::Update(float _deltaTime)
     m_GameVp.Update(_deltaTime);
     float HSpeed = 0.01f;
     float VSpeed = HSpeed * m_GameVp.GetRatio();
+    float speed = 1.0f / 15.0f;
+
+    // Assuming the height of the background image is the same as the viewport height
+    float backgroundHeight = 1.6f; // Replace with the actual height of your background image
+
 
     //Background
-    backgroundSprite->Update(_deltaTime);
 
+    backgroundSprite1->SetAnimation(FALL);
+    backgroundSprite2->SetAnimation(FALL);
+    //backgroundSprite3->SetAnimation(FALL);
+
+    backgroundSprite1->Update(_deltaTime);
+    backgroundSprite2->Update(_deltaTime);
+    backgroundSprite3->Update(_deltaTime);
+
+    backgroundSprite1->position.y -= VSpeed;
+    backgroundSprite2->position.y -= VSpeed;
+    //backgroundSprite3->position.y -= VSpeed;
+
+    // Reset the position of the first background image if it scrolls out of view
+    if (backgroundSprite1->position.y <= -0.47f )//backgroundHeight)
+    {
+        backgroundSprite1->position.y = 1.49f;//backgroundHeight;
+    }
+
+    // Reset the position of the second background image if it scrolls out of view
+    if (backgroundSprite2->position.y <= -0.47f) //backgroundHeight)
+    {
+        backgroundSprite2->position.y = 1.49f; // backgroundHeight;
+    }
+
+    /*if (backgroundSprite3->position.y <= -backgroundHeight)
+    {
+        backgroundSprite3->position.y = backgroundHeight;
+    }*/
+    
     //update lasers
     greenlaser1Sprite->Update(_deltaTime);
     bluelaser1Sprite->Update(_deltaTime);
@@ -112,7 +160,22 @@ void MyGame::Update(float _deltaTime)
     redlaser1Sprite->Update(_deltaTime);
     yellowlaser1Sprite->Update(_deltaTime);
 
+    /*
     //lasers FALL
+    //while (true) {
+    backgroundSprite1->SetAnimation(FALL);
+    //backgroundSprite1->position.y -= VSpeed;
+
+    //backgroundSprite2->SetPosition(0.5f, 0.9f);
+    backgroundSprite2->SetAnimation(FALL);
+    //backgroundSprite2->position.y -= VSpeed;
+    backgroundSprite1->position = Vector2D(0.5f, 1.5f);
+    backgroundSprite1->CreateAnimation(FALL, speed, { 0 });
+    backgroundSprite1->SetAnimation(FALL);
+    //backgroundSprite1->position = Vector2D(0.5f, 1.5f);
+    //}
+    */
+
     greenlaser1Sprite->SetAnimation(FALL);
     greenlaser1Sprite->position.y -= VSpeed;
     bluelaser1Sprite->SetAnimation(FALL);
@@ -125,6 +188,7 @@ void MyGame::Update(float _deltaTime)
     redlaser1Sprite->position.y -= VSpeed;
     yellowlaser1Sprite->SetAnimation(FALL);
     yellowlaser1Sprite->position.y -= VSpeed;
+    
     
     //------------------------------------------------------------------------
     // Example Sprite Code....
@@ -192,7 +256,10 @@ void MyGame::Render()
     m_GameVp.Render();
 
     //Background
-    backgroundSprite->Render();
+    //backgroundSprite3->Render();
+    backgroundSprite1->Render();
+    backgroundSprite2->Render();
+    
 
     //lasers 
     greenlaser1Sprite->Render();
@@ -201,6 +268,7 @@ void MyGame::Render()
     purplelaser1Sprite->Render();
     redlaser1Sprite->Render();
     yellowlaser1Sprite->Render();
+    
     //------------------------------------------------------------------------
     // Example Sprite Code....
     testSprite->Render();
@@ -235,7 +303,12 @@ void MyGame::Render()
 void MyGame::Shutdown()
 {
     //Background
-    delete backgroundSprite;
+    //delete backgroundSprite3;
+    delete backgroundSprite1;
+    delete backgroundSprite2;
+    
+
+
     //Laser
     delete greenlaser1Sprite;
     delete bluelaser1Sprite;
@@ -243,7 +316,7 @@ void MyGame::Shutdown()
     delete purplelaser1Sprite;
     delete redlaser1Sprite;
     delete yellowlaser1Sprite;
-
+    
     //------------------------------------------------------------------------
     // Example Sprite Code....
     delete testSprite;
@@ -251,3 +324,4 @@ void MyGame::Shutdown()
 
     m_GameVp.Shutdown();
 }
+

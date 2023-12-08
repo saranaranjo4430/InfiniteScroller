@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utils\GameViewport.h"
+#include <string>
 
 class CGameSprite;
 
@@ -15,13 +16,18 @@ public:
     void Render();
     void Shutdown();
 
+
 private:
     //------------------------------------------------------------------------
+  
     // Example Sprite Code....
     CGameSprite* testSprite;
 
     //background
-    CGameSprite* backgroundSprite;
+    CGameSprite* backgroundSprite1;
+    CGameSprite* backgroundSprite2;
+    CGameSprite* backgroundSprite3;
+
 
     //lasers 1
     CGameSprite* greenlaser1Sprite;
@@ -46,6 +52,7 @@ private:
     CGameSprite* purplelaser3Sprite;
     CGameSprite* redlaser3Sprite;
     CGameSprite* yellowlaser3Sprite;
+    
 
     enum
     {

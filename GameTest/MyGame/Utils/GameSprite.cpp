@@ -41,3 +41,8 @@ void CGameSprite::CreateAnimation(unsigned int id, float speed, const std::vecto
     m_BaseSprite->CreateAnimation(id, speed, frames);
 }
 
+void CGameSprite::SetPosition(float x, float y)  
+//m_Vp.GetX(position.x), m_Vp.GetY(position.y)) 
+{
+    m_BaseSprite->SetPosition(x,y);
+}
