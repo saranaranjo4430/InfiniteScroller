@@ -34,7 +34,7 @@ void MyGame::Init(int width, int height)
     backgroundSprite1->CreateAnimation(FALL, speed, { 0 });
     backgroundSprite2 = new CGameSprite(m_GameVp, ".\\TestData\\Backgroundmasgrande.bmp", 1, 1);
     backgroundSprite2->CreateAnimation(FALL, speed, { 0 });
-    backgroundSprite3 = new CGameSprite(m_GameVp, ".\\TestData\\Background2.bmp", 1, 1);
+    //backgroundSprite3 = new CGameSprite(m_GameVp, ".\\TestData\\Background2.bmp", 1, 1);
     //backgroundSprite3->CreateAnimation(FALL, speed, { 0 });
     
     // 
@@ -129,7 +129,7 @@ void MyGame::Update(float _deltaTime)
 
     backgroundSprite1->Update(_deltaTime);
     backgroundSprite2->Update(_deltaTime);
-    backgroundSprite3->Update(_deltaTime);
+    //backgroundSprite3->Update(_deltaTime);
 
     backgroundSprite1->position.y -= VSpeed;
     backgroundSprite2->position.y -= VSpeed;
