@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------
 #include "stdafx.h"
 
+
 #include "..\app\app.h"
 
 #include "Utils\Utils.h"
@@ -96,26 +97,31 @@ void MyGame::Init(int width, int height)
     
     //------------------------------------------------------------------------
     // Example Sprite Code....
-    testSprite = new CGameSprite(m_GameVp, ".\\TestData\\Test.bmp", 8, 4);
-    testSprite->position = Vector2D(0.f, 0.f);
-    testSprite->scale = Vector2D(1.f, 1.f);
+    bunnySprite = new CGameSprite(m_GameVp, ".\\TestData\\conejo.bmp", 9, 4);
+    bunnySprite->position = Vector2D(0.f, 0.f);
+    bunnySprite->scale = Vector2D(1.f, 1.f);
 
     
-    testSprite->CreateAnimation(ANIM_BACKWARDS, speed, { 0,1,2,3,4,5,6,7 });
-    testSprite->CreateAnimation(ANIM_LEFT, speed, { 8,9,10,11,12,13,14,15 });
-    testSprite->CreateAnimation(ANIM_RIGHT, speed, { 16,17,18,19,20,21,22,23 });
-    testSprite->CreateAnimation(ANIM_FORWARDS, speed, { 24,25,26,27,28,29,30,31 });
+    bunnySprite->CreateAnimation(ANIM_BACKWARDS, speed, { 18,19,20,21,22,23,24,25,26 });
+    bunnySprite->CreateAnimation(ANIM_LEFT, speed, { 9,10,11,12,13,14,15,16,17 });
+    bunnySprite->CreateAnimation(ANIM_RIGHT, speed, { 27,28,29,30,31,32,33,34,35 });
+    bunnySprite->CreateAnimation(ANIM_FORWARDS, speed, { 0,1,2,3,4,5,6,7,8 });
 
     App::LoadSound(".\\TestData\\Test.wav");
+
+    App::LoadSound(".\\TestData\\Taylor.wav");
     //------------------------------------------------------------------------
 }
 
 void MyGame::Update(float _deltaTime)
 {
+    
     m_GameVp.Update(_deltaTime);
     float HSpeed = 0.01f;
     float VSpeed = HSpeed * m_GameVp.GetRatio();
     float speed = 1.0f / 15.0f;
+
+    App::PlaySound(".\\TestData\\Taylor.wav", false);
 
     // Assuming the height of the background image is the same as the viewport height
     float backgroundHeight = 1.6f; // Replace with the actual height of your background image
@@ -192,7 +198,7 @@ void MyGame::Update(float _deltaTime)
     
     //------------------------------------------------------------------------
     // Example Sprite Code....
-    testSprite->Update(_deltaTime);
+    bunnySprite->Update(_deltaTime);
 
     const CController* pController = Utils::GetFirstActiveController();
     if (pController)
@@ -201,39 +207,40 @@ void MyGame::Update(float _deltaTime)
 
         if ((pController->GetLeftThumbStickX() > 0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
         {
-            testSprite->SetAnimation(ANIM_RIGHT);
-            testSprite->position.x += HSpeed;
+            bunnySprite->SetAnimation(ANIM_RIGHT);
+            bunnySprite->position.x += HSpeed;
+            App::PlaySound(".\\TestData\\music.wav");
         }
         if ((pController->GetLeftThumbStickX() < -0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
         {
-            testSprite->SetAnimation(ANIM_LEFT);
-            testSprite->position.x -= HSpeed;
+            bunnySprite->SetAnimation(ANIM_LEFT);
+            bunnySprite->position.x -= HSpeed;
         }
         if ((pController->GetLeftThumbStickY() > 0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
         {
-            testSprite->SetAnimation(ANIM_FORWARDS);
-            testSprite->position.y += VSpeed;
+            bunnySprite->SetAnimation(ANIM_FORWARDS);
+            bunnySprite->position.y += VSpeed;
         }
         if ((pController->GetLeftThumbStickY() < -0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
         {
-            testSprite->SetAnimation(ANIM_BACKWARDS);
-            testSprite->position.y -= VSpeed;
+            bunnySprite->SetAnimation(ANIM_BACKWARDS);
+            bunnySprite->position.y -= VSpeed;
         }
         if (pController->CheckButton(XINPUT_GAMEPAD_LEFT_SHOULDER, false))
         {
-            testSprite->scale.x += HSpeed;
+            bunnySprite->scale.x += HSpeed;
         }
         if (pController->CheckButton(XINPUT_GAMEPAD_RIGHT_SHOULDER, false))
         {
-            testSprite->scale.x -= VSpeed;
+            bunnySprite->scale.x -= VSpeed;
         }
         if (pController->GetLeftTrigger())
         {
-            testSprite->angle += 0.1f * pController->GetLeftTrigger();
+            bunnySprite->angle += 0.1f * pController->GetLeftTrigger();
         }
         if (pController->GetRightTrigger())
         {
-            testSprite->angle -= 0.1f * pController->GetRightTrigger();
+            bunnySprite->angle -= 0.1f * pController->GetRightTrigger();
         }
 
         //------------------------------------------------------------------------
@@ -246,7 +253,7 @@ void MyGame::Update(float _deltaTime)
     }
     else
     {
-        testSprite->SetAnimation(-1);
+        bunnySprite->SetAnimation(-1);
     }
     //------------------------------------------------------------------------
 }
@@ -271,7 +278,7 @@ void MyGame::Render()
     
     //------------------------------------------------------------------------
     // Example Sprite Code....
-    testSprite->Render();
+    bunnySprite->Render();
     //------------------------------------------------------------------------
 
     //------------------------------------------------------------------------
@@ -319,7 +326,7 @@ void MyGame::Shutdown()
     
     //------------------------------------------------------------------------
     // Example Sprite Code....
-    delete testSprite;
+    delete bunnySprite;
     //------------------------------------------------------------------------
 
     m_GameVp.Shutdown();

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "..\app\SimpleSprite.h"
+#include "..\app\SimpleSound.h"
+
 #include "Utils\GameViewport.h"
 #include <string>
 
@@ -21,7 +24,7 @@ private:
     //------------------------------------------------------------------------
   
     // Example Sprite Code....
-    CGameSprite* testSprite;
+    CGameSprite* bunnySprite;
 
     //background
     CGameSprite* backgroundSprite1;
