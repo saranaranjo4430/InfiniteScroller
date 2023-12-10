@@ -109,7 +109,7 @@ void MyGame::Init(int width, int height)
 
     App::LoadSound(".\\TestData\\Test.wav");
 
-    App::LoadSound(".\\TestData\\Taylor.wav");
+    App::LoadSound(".\\TestData\\music.wav");
     //------------------------------------------------------------------------
 }
 
@@ -121,7 +121,7 @@ void MyGame::Update(float _deltaTime)
     float VSpeed = HSpeed * m_GameVp.GetRatio();
     float speed = 1.0f / 15.0f;
 
-    App::PlaySound(".\\TestData\\Taylor.wav", false);
+    App::PlaySound(".\\TestData\\music.wav", false);
 
     // Assuming the height of the background image is the same as the viewport height
     float backgroundHeight = 1.6f; // Replace with the actual height of your background image
