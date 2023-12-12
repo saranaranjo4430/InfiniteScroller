@@ -325,16 +325,19 @@ void Ellipse2D::Scale(float _scaleX, float _scaleY)
 
 float Ellipse2D::GetRadius(const Vector2D& _direction) const
 {
+    float radiusX = m_Radius * m_Scale.x;
+    float radiusY = m_Radius * m_Scale.y;
+
     if (_direction.GetNorm() < Utils::Epsilon())
     {
-        return min(m_Radius * m_Scale.x, m_Radius * m_Scale.y);
+        return min(radiusX, radiusY);
     }
 
     Vector2D dir = _direction;
     dir.Rotate(-m_Angle);
     dir.Normalize();
-    dir.x *= m_Radius * m_Scale.x;
-    dir.y *= m_Radius * m_Scale.y;
+    dir.x *= radiusX;
+    dir.y *= radiusY;
     return dir.GetNorm();
 }
 
@@ -349,6 +352,9 @@ void Ellipse2D::Draw(const Utils::Color& _color, int sharpness) const
     float twicePi = 2.0f * PI;
 
     float baseAngle = Utils::DegToRad(m_Angle);
+
+    float radiusX = m_Radius * m_Scale.x;
+    float radiusY = m_Radius * m_Scale.y;
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -369,8 +375,8 @@ void Ellipse2D::Draw(const Utils::Color& _color, int sharpness) const
     {
         float angle = i * twicePi / nbEdges;
 
-        float deltaX = cosf(angle) * m_Radius * m_Scale.x;
-        float deltaY = sinf(angle) * m_Radius * m_Scale.y;
+        float deltaX = cosf(angle) * radiusX;
+        float deltaY = sinf(angle) * radiusY;
 
         float newX = (deltaX * cosf(baseAngle)) - (deltaY * sinf(baseAngle));
         float newY = (deltaX * sinf(baseAngle)) + (deltaY * cosf(baseAngle));

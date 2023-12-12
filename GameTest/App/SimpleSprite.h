@@ -24,7 +24,7 @@ public:
     void SetScaleX(float s) { m_scaleX = s; }
     void SetScaleY(float s) { m_scaleY = s; }
     void SetFrame(unsigned int f);
-    void SetAnimation(int id);
+    void SetAnimation(int id, bool loop = true);
 	void GetPosition(float &x, float &y) { x = m_xpos; y = m_ypos; }
     float GetWidth()  const { return m_width;  }
     float GetHeight() const { return m_height; }
@@ -42,6 +42,12 @@ public:
         m_animations.push_back(anim);        
     };
 
+    int GetAnimationId() const { return m_animations[m_currentAnim].m_id; }
+    bool IsAnimationFinished() const { return m_animFinished; }
+
+    int GetTextureWidth() const { return m_texWidth; }
+    int GetTextureHeight() const { return m_texHeight; }
+
 private:
     void CalculateUVs();
     GLuint m_texture;
@@ -54,7 +60,7 @@ private:
     float m_angle = 0.0F;
     float m_scaleX = 1.0F;
     float m_scaleY = 1.0F;
-    float m_points[8];    
+    float m_points[8];
     float m_uvcoords[8];
     unsigned int   m_frame;
     unsigned int   m_nColumns;
@@ -64,12 +70,15 @@ private:
 	float m_blue = 1.0f;
     int     m_currentAnim = -1;
     float   m_animTime = 0.0F;
+    bool    m_animLoop = true;
+    bool    m_animFinished = false;
 
     struct sAnimation
     {
         unsigned int m_id = 0;
         float m_speed = 0.0f;
         std::vector<int> m_frames;
+        bool m_loop = true;
     };
     std::vector<sAnimation> m_animations;
 
@@ -82,7 +91,6 @@ private:
     };
     bool LoadTexture(const char*);
     static std::map<const char *, sTextureDef > m_textures;
-    
 };
 
 #endif
