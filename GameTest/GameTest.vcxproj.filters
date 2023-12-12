@@ -113,6 +113,9 @@
     <Filter Include="PaperGirl">
       <UniqueIdentifier>{9385c9c1-34a3-48dc-81fc-3eff656d5121}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameSara">
+      <UniqueIdentifier>{a47ada21-7014-4e62-bced-2dca31f2c4b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">
