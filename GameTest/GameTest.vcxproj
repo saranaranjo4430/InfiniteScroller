@@ -189,7 +189,6 @@
     <ClInclude Include="MyGame\Utils\ScrollingBackground.h" />
     <ClInclude Include="MyGame\Utils\Utils.h" />
     <ClInclude Include="MyGame\Utils\Vectors.h" />
-    <ClInclude Include="PaperGirl\PaperGirl.h" />
     <ClInclude Include="stb_image\stb_image.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -208,7 +207,6 @@
     <ClCompile Include="MyGame\Utils\ScrollingBackground.cpp" />
     <ClCompile Include="MyGame\Utils\Utils.cpp" />
     <ClCompile Include="MyGame\Utils\Vectors.cpp" />
-    <ClCompile Include="PaperGirl\PaperGirl.cpp" />
     <ClCompile Include="stb_image\stb_image.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

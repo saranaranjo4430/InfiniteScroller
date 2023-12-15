@@ -10,15 +10,12 @@
 //------------------------------------------------------------------------
 #include "MyGame\UnitTests.h"
 #include "MyGame\MyGame.h"
-#include "PaperGirl\PaperGirl.h"
 
 //------------------------------------------------------------------------
 MyGame* myGame;
 UnitTests* unitTests;
-PaperGirl* paperGirl;
 
 bool useUnitTests = false;
-bool usePaperGirl = true;
 
 //------------------------------------------------------------------------
 // Called before first update. Do any initial setup here.
@@ -29,11 +26,6 @@ void Init()
 	{
 		unitTests = new UnitTests();
 		unitTests->Init(432, 768);
-	}
-	else if (usePaperGirl)
-	{
-        paperGirl = new PaperGirl();
-        paperGirl->Init(920, 460);
 	}
 	else
 	{
@@ -52,11 +44,7 @@ void Update(float deltaTime)
 	{
 		unitTests->Update(deltaTime);
 	}
-    else if (usePaperGirl)
-    {
-        paperGirl->Update(deltaTime);
-    }
-	else
+    else
 	{
 		myGame->Update(deltaTime);
 	}
@@ -72,11 +60,7 @@ void Render()
 	{
 		unitTests->Render();
 	}
-    else if (usePaperGirl)
-    {
-        paperGirl->Render();
-    }
-	else
+    else
 	{
 		myGame->Render();
 	}
@@ -91,11 +75,7 @@ void Shutdown()
 	{
 		unitTests->Shutdown();
 	}
-    else if (usePaperGirl)
-    {
-        paperGirl->Shutdown();
-    }
-	else
+    else
 	{
 		myGame->Shutdown();
 	}

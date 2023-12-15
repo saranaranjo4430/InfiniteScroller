@@ -24,10 +24,9 @@ MyGame::~MyGame()
 
 void MyGame::Init(int width, int height)
 {
+    gameVp.Init(width, height);
+    gameVp.AddFlag(DRAW_VIEWPORT);
 
-    m_GameVp.Init(width, height);
-    m_GameVp.AddFlag(DRAW_VIEWPORT);
-    m_GameVp.AddFlag(DRAW_BORDERS);
     float speed = 1.0f / 15.0f;
 
     //Background 
@@ -98,30 +97,29 @@ void MyGame::Init(int width, int height)
     //------------------------------------------------------------------------
     // Example Sprite Code....
     bunnySprite = new CGameSprite(".\\TestData\\conejo.bmp", 9, 4);
-    bunnySprite->position = Vector2D(0.f, 0.f);
+    bunnySprite->position = Vector2D(0.5f, 0.25f);
     bunnySprite->scale = Vector2D(1.f, 1.f);
-
     
     bunnySprite->CreateAnimation(ANIM_BACKWARDS, speed, { 18,19,20,21,22,23,24,25,26 });
     bunnySprite->CreateAnimation(ANIM_LEFT, speed, { 9,10,11,12,13,14,15,16,17 });
     bunnySprite->CreateAnimation(ANIM_RIGHT, speed, { 27,28,29,30,31,32,33,34,35 });
     bunnySprite->CreateAnimation(ANIM_FORWARDS, speed, { 0,1,2,3,4,5,6,7,8 });
 
+
     App::LoadSound(".\\TestData\\Test.wav");
 
     App::LoadSound(".\\TestData\\music.wav");
+    App::PlaySound(".\\TestData\\music.wav", true);
     //------------------------------------------------------------------------
 }
 
 void MyGame::Update(float _deltaTime)
 {
+    gameVp.Update(_deltaTime);
     
-    m_GameVp.Update(_deltaTime);
     float HSpeed = 0.01f;
-    float VSpeed = HSpeed * m_GameVp.GetRatio();
+    float VSpeed = HSpeed * gameVp.GetRatio();
     float speed = 1.0f / 15.0f;
-
-    App::PlaySound(".\\TestData\\music.wav", false);
 
     // Assuming the height of the background image is the same as the viewport height
     float backgroundHeight = 1.6f; // Replace with the actual height of your background image
@@ -203,8 +201,6 @@ void MyGame::Update(float _deltaTime)
     const CController* pController = Utils::GetFirstActiveController();
     if (pController)
     {
-        
-
         if ((pController->GetLeftThumbStickX() > 0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
         {
             bunnySprite->SetAnimation(ANIM_RIGHT);
@@ -260,7 +256,7 @@ void MyGame::Update(float _deltaTime)
 
 void MyGame::Render()
 {
-    m_GameVp.Render();
+    gameVp.Render();
 
     //Background
     //backgroundSprite3->Render();
@@ -281,6 +277,7 @@ void MyGame::Render()
     bunnySprite->Render();
     //------------------------------------------------------------------------
 
+    /*
     //------------------------------------------------------------------------
     // Example Text.
     //------------------------------------------------------------------------
@@ -305,6 +302,7 @@ void MyGame::Render()
         b = (float)i / 20.0f;
         App::DrawLine(sx, sy, ex, ey, r, g, b);
     }
+    */
 }
 
 void MyGame::Shutdown()
@@ -329,6 +327,6 @@ void MyGame::Shutdown()
     delete bunnySprite;
     //------------------------------------------------------------------------
 
-    m_GameVp.Shutdown();
+    gameVp.Shutdown();
 }
 
