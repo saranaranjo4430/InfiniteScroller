@@ -31,11 +31,11 @@ void MyGame::Init(int width, int height)
     float speed = 1.0f / 15.0f;
 
     //Background 
-    backgroundSprite1 = new CGameSprite(m_GameVp, ".\\TestData\\Backgroundmasgrande.bmp", 1, 1);
+    backgroundSprite1 = new CGameSprite(".\\TestData\\Backgroundmasgrande.bmp", 1, 1);
     backgroundSprite1->CreateAnimation(FALL, speed, { 0 });
-    backgroundSprite2 = new CGameSprite(m_GameVp, ".\\TestData\\Backgroundmasgrande.bmp", 1, 1);
+    backgroundSprite2 = new CGameSprite(".\\TestData\\Backgroundmasgrande.bmp", 1, 1);
     backgroundSprite2->CreateAnimation(FALL, speed, { 0 });
-    //backgroundSprite3 = new CGameSprite(m_GameVp, ".\\TestData\\Background2.bmp", 1, 1);
+    //backgroundSprite3 = new CGameSprite(".\\TestData\\Background2.bmp", 1, 1);
     //backgroundSprite3->CreateAnimation(FALL, speed, { 0 });
     
     // 
@@ -44,28 +44,28 @@ void MyGame::Init(int width, int height)
     //backgroundSprite3->position = Vector2D(0.5f, 2.5f);
 
     //init lasers 1
-    greenlaser1Sprite = new CGameSprite(m_GameVp, ".\\TestData\\green_laser1.bmp", 1, 1);
-    bluelaser1Sprite = new CGameSprite(m_GameVp, ".\\TestData\\blue_laser1.bmp", 1, 1);
-    darkbluelaser1Sprite = new CGameSprite(m_GameVp, ".\\TestData\\darkblue_laser1.bmp", 1, 1);
-    purplelaser1Sprite = new CGameSprite(m_GameVp, ".\\TestData\\purple_laser1.bmp", 1, 1);
-    redlaser1Sprite = new CGameSprite(m_GameVp, ".\\TestData\\red_laser1.bmp", 1, 1);
-    yellowlaser1Sprite = new CGameSprite(m_GameVp, ".\\TestData\\yellow_laser1.bmp", 1, 1);
+    greenlaser1Sprite = new CGameSprite(".\\TestData\\green_laser1.bmp", 1, 1);
+    bluelaser1Sprite = new CGameSprite(".\\TestData\\blue_laser1.bmp", 1, 1);
+    darkbluelaser1Sprite = new CGameSprite(".\\TestData\\darkblue_laser1.bmp", 1, 1);
+    purplelaser1Sprite = new CGameSprite(".\\TestData\\purple_laser1.bmp", 1, 1);
+    redlaser1Sprite = new CGameSprite(".\\TestData\\red_laser1.bmp", 1, 1);
+    yellowlaser1Sprite = new CGameSprite(".\\TestData\\yellow_laser1.bmp", 1, 1);
 
     //init lasers 2 
-    greenlaser2Sprite = new CGameSprite(m_GameVp, ".\\TestData\\green_laser2.bmp", 1, 1);
-    bluelaser2Sprite = new CGameSprite(m_GameVp, ".\\TestData\\blue_laser2.bmp", 1, 1);
-    darkbluelaser2Sprite = new CGameSprite(m_GameVp, ".\\TestData\\darkblue_laser2.bmp", 1, 1);
-    purplelaser2Sprite = new CGameSprite(m_GameVp, ".\\TestData\\purple_laser2.bmp", 1, 1);
-    redlaser2Sprite = new CGameSprite(m_GameVp, ".\\TestData\\red_laser2.bmp", 1, 1);
-    yellowlaser2Sprite = new CGameSprite(m_GameVp, ".\\TestData\\yellow_laser2.bmp", 1, 1);
+    greenlaser2Sprite = new CGameSprite(".\\TestData\\green_laser2.bmp", 1, 1);
+    bluelaser2Sprite = new CGameSprite(".\\TestData\\blue_laser2.bmp", 1, 1);
+    darkbluelaser2Sprite = new CGameSprite(".\\TestData\\darkblue_laser2.bmp", 1, 1);
+    purplelaser2Sprite = new CGameSprite(".\\TestData\\purple_laser2.bmp", 1, 1);
+    redlaser2Sprite = new CGameSprite(".\\TestData\\red_laser2.bmp", 1, 1);
+    yellowlaser2Sprite = new CGameSprite(".\\TestData\\yellow_laser2.bmp", 1, 1);
 
     //init lasers 3
-    greenlaser3Sprite = new CGameSprite(m_GameVp, ".\\TestData\\green_laser3.bmp", 1, 1);
-    bluelaser3Sprite = new CGameSprite(m_GameVp, ".\\TestData\\blue_laser3.bmp", 1, 1);
-    darkbluelaser3Sprite = new CGameSprite(m_GameVp, ".\\TestData\\darkblue_laser3.bmp", 1, 1);
-    purplelaser3Sprite = new CGameSprite(m_GameVp, ".\\TestData\\purple_laser3.bmp", 1, 1);
-    redlaser3Sprite = new CGameSprite(m_GameVp, ".\\TestData\\red_laser3.bmp", 1, 1);
-    yellowlaser3Sprite = new CGameSprite(m_GameVp, ".\\TestData\\yellow_laser3.bmp", 1, 1);
+    greenlaser3Sprite = new CGameSprite(".\\TestData\\green_laser3.bmp", 1, 1);
+    bluelaser3Sprite = new CGameSprite(".\\TestData\\blue_laser3.bmp", 1, 1);
+    darkbluelaser3Sprite = new CGameSprite(".\\TestData\\darkblue_laser3.bmp", 1, 1);
+    purplelaser3Sprite = new CGameSprite(".\\TestData\\purple_laser3.bmp", 1, 1);
+    redlaser3Sprite = new CGameSprite(".\\TestData\\red_laser3.bmp", 1, 1);
+    yellowlaser3Sprite = new CGameSprite(".\\TestData\\yellow_laser3.bmp", 1, 1);
     
 
     //Init positions of lasers 
@@ -97,7 +97,7 @@ void MyGame::Init(int width, int height)
     
     //------------------------------------------------------------------------
     // Example Sprite Code....
-    bunnySprite = new CGameSprite(m_GameVp, ".\\TestData\\conejo.bmp", 9, 4);
+    bunnySprite = new CGameSprite(".\\TestData\\conejo.bmp", 9, 4);
     bunnySprite->position = Vector2D(0.f, 0.f);
     bunnySprite->scale = Vector2D(1.f, 1.f);
 
