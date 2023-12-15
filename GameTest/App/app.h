@@ -55,6 +55,7 @@ namespace App
 	//*******************************************************************************************
 	bool LoadSound(const char* fileName);
 	void ReleaseSound(const char* fileName);
+	void SetVolume(const char* fileName, float volume);
 
 	//-------------------------------------------------------------------------------------------
 	// void PlaySound(const char *fileName, bool looping = false);

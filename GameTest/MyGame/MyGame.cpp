@@ -110,6 +110,7 @@ void MyGame::Init(int width, int height)
 
     App::LoadSound(".\\TestData\\music.wav");
     App::PlaySound(".\\TestData\\music.wav", true);
+    App::SetVolume(".\\TestData\\music.wav", 0.75f);
     //------------------------------------------------------------------------
 }
 
@@ -205,7 +206,6 @@ void MyGame::Update(float _deltaTime)
         {
             bunnySprite->SetAnimation(ANIM_RIGHT);
             bunnySprite->position.x += HSpeed;
-            App::PlaySound(".\\TestData\\music.wav");
         }
         if ((pController->GetLeftThumbStickX() < -0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
         {
@@ -326,6 +326,9 @@ void MyGame::Shutdown()
     // Example Sprite Code....
     delete bunnySprite;
     //------------------------------------------------------------------------
+
+    App::ReleaseSound(".\\TestData\\Test.wav");
+    App::ReleaseSound(".\\TestData\\music.wav");
 
     gameVp.Shutdown();
 }
