@@ -11,14 +11,37 @@ class CSimpleSprite;
 //A GameSprite encapsulates a SimpleSprite. It is meant to display in a GameViewport.
 //Position & Scale must be set in Viewport percents.
 
+enum CollisionType
+{
+    NONE = 0,
+    BOX,
+    CIRCLE,
+};
+
+enum GameSpriteFlags
+{
+    DRAW_COLLISION = (1 << 0),
+};
+
 class CGameSprite
 {
 public:
-    CGameSprite(const GameViewport& _vp, const char* _fileName, int _columns, int _rows);
-    ~CGameSprite();
+    CGameSprite(const char* _fileName, int _columns, int _rows);
+    virtual ~CGameSprite();
 
     void Update(float _deltaTime);
     void Render();
+
+    inline void AddFlag(GameSpriteFlags flags) { m_Flags |= flags; }
+    inline void RemoveFlag(GameSpriteFlags flags) { m_Flags &= ~flags; }
+    inline bool HasFlag(GameSpriteFlags flags) { return (m_Flags & flags); }
+
+    //Collisions
+    void SetCollision(const CollisionType& type, const Vector2D& scaleModifier);
+
+    bool Overlap(const CGameSprite* _other) const;
+    bool Overlap(const Rect2D& _other) const;
+    bool Overlap(const Circle2D& _other) const;
 
     //Overrides
     void SetAnimation(int id);
@@ -31,6 +54,10 @@ public:
     float angle = 0.f;
 
 private:
-    const GameViewport& m_Vp;
-    CSimpleSprite* m_BaseSprite;
+    CSimpleSprite* m_BaseSprite = nullptr;
+
+    Rect2D* m_CollisionBox = nullptr;
+    Circle2D* m_CollisionCircle = nullptr;
+
+    int m_Flags = 0;
 };
