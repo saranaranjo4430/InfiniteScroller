@@ -31,48 +31,55 @@ void GameViewport::Render()
         //Viewport polygon
         Utils::DrawPolygon(bottomLeftX, bottomLeftY, topRightX, topRightY, Utils::Color_Blue);
     }
-    
-    if (HasFlag(DRAW_BORDERS))
-    {
-        //Left & Bottom polygons
-        Utils::DrawPolygon(0, bottomLeftY, bottomLeftX, topRightY, Utils::Color_Green);
-        Utils::DrawPolygon(0, 0, APP_INIT_WINDOW_WIDTH, bottomLeftY, Utils::Color_Red);
+}
 
-        //Right & Top polygons
-        Utils::DrawPolygon(topRightX, bottomLeftY, APP_INIT_WINDOW_WIDTH, topRightY, Utils::Color_Green);
-        Utils::DrawPolygon(0, topRightY, APP_INIT_WINDOW_WIDTH, APP_INIT_WINDOW_HEIGHT, Utils::Color_Red);
-    }
+void GameViewport::RenderBorders()
+{
+    //Viewport corners
+    float bottomLeftX = GetX(0.f);
+    float bottomLeftY = GetY(0.f);
+    float topRightX = GetX(1.f);
+    float topRightY = GetY(1.f);
+
+#if APP_USE_VIRTUAL_RES
+    float min = 0.f;
+    float xmax = APP_INIT_WINDOW_WIDTH;
+    float ymax = APP_INIT_WINDOW_HEIGHT;
+#else
+    float min = -1.f;
+    float xmax = 1.f;
+    float ymax = 1.f;
+#endif
+
+    //Left & Bottom polygons
+    Utils::DrawPolygon(min, bottomLeftY, bottomLeftX, topRightY, Utils::Color_Black);
+    Utils::DrawPolygon(min, min, xmax, bottomLeftY, Utils::Color_Black);
+
+    //Right & Top polygons
+    Utils::DrawPolygon(topRightX, bottomLeftY, xmax, topRightY, Utils::Color_Black);
+    Utils::DrawPolygon(min, topRightY, xmax, ymax, Utils::Color_Black);
 }
 
 float GameViewport::GetX(float _percent) const
 {
-    float appWindowRatio = (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT;
-    if (appWindowRatio > m_VpRatio)
-    {
-        //App Window is larger than the Game Viewport
-        float vpSizeWithinAppWindow = (m_VpRatio / appWindowRatio) * APP_INIT_WINDOW_WIDTH;
-        float vpOffset = (APP_INIT_WINDOW_WIDTH - vpSizeWithinAppWindow) * 0.5f;
-        float x = vpOffset + (vpSizeWithinAppWindow * _percent);
-        return x;
-    }
+    float x = GetXInPixel(_percent);
 
-    return APP_INIT_WINDOW_WIDTH * _percent;
+#if !APP_USE_VIRTUAL_RES
+    x = (x / APP_INIT_WINDOW_WIDTH) * 2.f - 1.f;
+#endif
+
+    return x;
 }
-
 
 float GameViewport::GetY(float _percent) const
 {
-    float appWindowRatio = (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT;
-    if (appWindowRatio < m_VpRatio)
-    {
-        //App Window is smaller than the Game Viewport
-        float vpSizeWithinAppWindow = (appWindowRatio / m_VpRatio) * APP_INIT_WINDOW_HEIGHT;
-        float vpOffset = (APP_INIT_WINDOW_HEIGHT - vpSizeWithinAppWindow) * 0.5f;
-        float y = vpOffset + (vpSizeWithinAppWindow * _percent);
-        return y;
-    }
+    float y = GetYInPixel(_percent);
 
-    return APP_INIT_WINDOW_HEIGHT * _percent;
+#if !APP_USE_VIRTUAL_RES
+    y = (y / APP_INIT_WINDOW_HEIGHT) * 2.f - 1.f;
+#endif
+
+    return y;
 }
 
 float GameViewport::GetWidth(float _percent) const
@@ -106,5 +113,44 @@ float GameViewport::GetScaleY(float _scale) const
     return ratio;
 }
 
+float GameViewport::GetVirtualScale(float _scale) const
+{
+    float scale = GetScaleX(_scale);
 
+    float appWindowRatio = (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT;
+    if (appWindowRatio > m_VpRatio)
+    {
+        scale *= appWindowRatio / m_VpRatio;
+    }
+    return scale;
+}
 
+float GameViewport::GetXInPixel(float _percent) const
+{
+    float appWindowRatio = (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT;
+    if (appWindowRatio > m_VpRatio)
+    {
+        //App Window is larger than the Game Viewport
+        float vpSizeWithinAppWindow = (m_VpRatio / appWindowRatio) * APP_INIT_WINDOW_WIDTH;
+        float vpOffset = (APP_INIT_WINDOW_WIDTH - vpSizeWithinAppWindow) * 0.5f;
+        float x = vpOffset + (vpSizeWithinAppWindow * _percent);
+        return x;
+    }
+     
+    return APP_INIT_WINDOW_WIDTH * _percent;
+}
+
+float GameViewport::GetYInPixel(float _percent) const
+{
+    float appWindowRatio = (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT;
+    if (appWindowRatio < m_VpRatio)
+    {
+        //App Window is smaller than the Game Viewport
+        float vpSizeWithinAppWindow = (appWindowRatio / m_VpRatio) * APP_INIT_WINDOW_HEIGHT;
+        float vpOffset = (APP_INIT_WINDOW_HEIGHT - vpSizeWithinAppWindow) * 0.5f;
+        float y = vpOffset + (vpSizeWithinAppWindow * _percent);
+        return y;
+    }
+
+    return APP_INIT_WINDOW_HEIGHT * _percent;
+}

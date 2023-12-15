@@ -1,6 +1,7 @@
 #pragma once
 
 #define safedelete(p) if (p) delete p; p=nullptr;
+#define STICK_THRESHOLD 0.2f
 
 namespace Utils
 {
@@ -29,4 +30,6 @@ namespace Utils
     float Clampf(float value, float min, float max);
     float DegToRad(float degrees);
     float RadToDeg(float radians);
+    float Random(float fMin, float fMax);
+    float Epsilon();
 }

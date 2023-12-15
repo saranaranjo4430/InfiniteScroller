@@ -45,10 +45,26 @@ void CSimpleSprite::Update(float dt)
     {
         m_animTime += dt/1000.0f;
         sAnimation &anim = m_animations[m_currentAnim];
-        float duration = anim.m_speed * anim.m_frames.size();
-        m_animTime = fmodf(m_animTime, duration);
-        int frame = (int)( m_animTime / anim.m_speed );
-        SetFrame(anim.m_frames[frame]);        
+        if (!m_animFinished)
+        {
+            int nbFrames = (int)anim.m_frames.size();
+            float duration = anim.m_speed * nbFrames;
+            if (m_animTime >= duration && !m_animLoop)
+            {
+                unsigned int frame = anim.m_frames[nbFrames - 1];
+                if (m_frame == frame)
+                {
+                    m_animFinished = true;
+                }
+                SetFrame(frame);
+            }
+            else if (duration > 0.f)
+            {
+                m_animTime = fmodf(m_animTime, duration);
+                unsigned int frame = (unsigned int)(m_animTime / anim.m_speed);
+                SetFrame(anim.m_frames[frame]);
+            }
+        }
     }
 }
 
@@ -77,8 +93,8 @@ void CSimpleSprite::CalculateUVs()
 void CSimpleSprite::Draw()
 {            
 #if APP_USE_VIRTUAL_RES
-    float scalex = (m_scaleX / APP_VIRTUAL_WIDTH) * 2.0f;
-    float scaley = (m_scaleY / APP_VIRTUAL_HEIGHT) * 2.0f;
+    float scalex = (m_scaleX / APP_VIRTUAL_WIDTH) *2.0f;
+    float scaley = (m_scaleY / APP_VIRTUAL_HEIGHT) *2.0f;
 #else
     float scalex = m_scaleX;
     float scaley = m_scaleY;
@@ -121,17 +137,24 @@ void CSimpleSprite::SetFrame(unsigned int f)
     CalculateUVs();
 }
 
-void CSimpleSprite::SetAnimation(int id)
+void CSimpleSprite::SetAnimation(int id, bool loop)
 {
     for (int i = 0; i < m_animations.size(); i++)
     {
         if (m_animations[i].m_id == id)
         {
-            m_currentAnim = i;
+            if (m_currentAnim != i)
+            {
+                m_currentAnim = i;
+                m_animLoop = loop;
+                m_animFinished = false;
+                m_animTime = 0.f;
+                SetFrame(m_animations[i].m_frames[0]);
+            }
             return;
         }
     }
-	m_currentAnim = -1;
+    m_currentAnim = -1;
 }
 
 bool CSimpleSprite::LoadTexture(const char * filename)

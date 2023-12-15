@@ -8,18 +8,38 @@
 //------------------------------------------------------------------------
 #include "app\app.h"
 //------------------------------------------------------------------------
+#include "MyGame\UnitTests.h"
 #include "MyGame\MyGame.h"
+#include "PaperGirl\PaperGirl.h"
 
 //------------------------------------------------------------------------
 MyGame* myGame;
+UnitTests* unitTests;
+PaperGirl* paperGirl;
+
+bool useUnitTests = false;
+bool usePaperGirl = true;
 
 //------------------------------------------------------------------------
 // Called before first update. Do any initial setup here.
 //------------------------------------------------------------------------
 void Init()
 {
-	myGame = new MyGame();
-	myGame->Init(432, 768);
+	if (useUnitTests)
+	{
+		unitTests = new UnitTests();
+		unitTests->Init(432, 768);
+	}
+	else if (usePaperGirl)
+	{
+        paperGirl = new PaperGirl();
+        paperGirl->Init(920, 460);
+	}
+	else
+	{
+        myGame = new MyGame();
+        myGame->Init(432, 768);
+	}
 }
 
 //------------------------------------------------------------------------
@@ -28,7 +48,18 @@ void Init()
 //------------------------------------------------------------------------
 void Update(float deltaTime)
 {
-	myGame->Update(deltaTime);
+	if (useUnitTests)
+	{
+		unitTests->Update(deltaTime);
+	}
+    else if (usePaperGirl)
+    {
+        paperGirl->Update(deltaTime);
+    }
+	else
+	{
+		myGame->Update(deltaTime);
+	}
 }
 
 //------------------------------------------------------------------------
@@ -37,7 +68,18 @@ void Update(float deltaTime)
 //------------------------------------------------------------------------
 void Render()
 {	
-	myGame->Render();
+	if (useUnitTests)
+	{
+		unitTests->Render();
+	}
+    else if (usePaperGirl)
+    {
+        paperGirl->Render();
+    }
+	else
+	{
+		myGame->Render();
+	}
 }
 //------------------------------------------------------------------------
 // Add your shutdown code here. Called when the APP_QUIT_KEY is pressed.
@@ -45,6 +87,17 @@ void Render()
 //------------------------------------------------------------------------
 void Shutdown()
 {	
-	myGame->Shutdown();
+	if (useUnitTests)
+	{
+		unitTests->Shutdown();
+	}
+    else if (usePaperGirl)
+    {
+        paperGirl->Shutdown();
+    }
+	else
+	{
+		myGame->Shutdown();
+	}
 }
 

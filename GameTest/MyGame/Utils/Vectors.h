@@ -3,7 +3,7 @@
 #include "GameViewport.h"
 #include "Utils.h"
 
-class Circle2D;
+class Ellipse2D;
 
 class Vector2D
 {
@@ -52,13 +52,15 @@ public:
 
     float GetNorm() const;
     float GetNorm2() const;
-    
+
     void Normalize(float _len = 1.f);
     void Rotate(float _degrees);
 
     float Distance(const Vector2D& _other) const;
     float Dot(const Vector2D& _other) const;
     float Angle(const Vector2D& _other) const;
+
+    void Draw(const Vector2D& _center, const Utils::Color& _color = Utils::Color_White) const;
 
     float x;
     float y;
@@ -79,10 +81,10 @@ public:
     float GetScaleX() const { return m_Scale.x; }
     float GetScaleY() const { return m_Scale.y; }
 
-    void Draw(const Utils::Color& _color) const;
-    
+    void Draw(const Utils::Color& _color = Utils::Color_White) const;
+
     bool Overlap(const Rect2D& _other) const;
-    bool Overlap(const Circle2D& _circle) const;
+    bool Overlap(const Ellipse2D& _elipse) const;
 
 protected:
     void ComputePoints();
@@ -102,27 +104,53 @@ class Square2D : public Rect2D
 public:
     Square2D() {};
     Square2D(Vector2D& _center, float _size);
+
+    void Scale(float _scale);
+    float GetScale() const;
+
+private:
+    void Scale(float _scaleX, float _scaleY) { return Rect2D::Scale(_scaleX, _scaleY); }
+    float GetScaleX() const { return Rect2D::GetScaleX(); }
+    float GetScaleY() const { return Rect2D::GetScaleY(); }
 };
 
-class Circle2D
+class Ellipse2D
+{
+public:
+    Ellipse2D() {};
+    Ellipse2D(const Vector2D& _center, float _radius);
+
+    void Move(const Vector2D& _pos);
+    void Rotate(float _degrees);
+    void Scale(float _scaleX, float _scaleY);
+
+    Vector2D GetCenter() const { return m_Center; }
+    float GetRadius(const Vector2D& _direction) const;
+
+    void Draw(const Utils::Color& _color = Utils::Color_White, int sharpness = 10) const;
+
+    bool Overlap(const Rect2D& _rect) const;
+    bool Overlap(const Ellipse2D& _other) const;
+
+protected:
+    float m_Radius = 0.f;
+
+private:
+    Vector2D m_Center;
+    Vector2D m_Scale = Vector2D(1.f, 1.f);
+    float m_Angle = 0.f;
+};
+
+class Circle2D : public Ellipse2D
 {
 public:
     Circle2D() {};
     Circle2D(const Vector2D& _center, float _radius);
 
-    void Move(const Vector2D& _pos);
-    void Scale(float scale);
+    void Scale(float _scale);
 
-    Vector2D GetCenter() const { return m_Center; }
-    float GetRadius() const { return m_Radius * m_Scale; }
-
-    void Draw(const Utils::Color& _color, int sharpness = 10) const;
-
-    bool Overlap(const Rect2D& _rect) const;
-    bool Overlap(const Circle2D& _other) const;
+    float GetRadius() const;
 
 private:
-    Vector2D m_Center;
-    float m_Radius = 0.f;
-    float m_Scale = 1.f;
+    void Scale(float _scaleX, float _scaleY) { Ellipse2D::Scale(_scaleX, _scaleY); }
 };
