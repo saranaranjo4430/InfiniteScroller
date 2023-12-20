@@ -262,7 +262,7 @@ void MyGame::Render()
     //backgroundSprite3->Render();
     backgroundSprite1->Render();
     backgroundSprite2->Render();
-    
+
 
     //lasers 
     greenlaser1Sprite->Render();
@@ -271,7 +271,7 @@ void MyGame::Render()
     purplelaser1Sprite->Render();
     redlaser1Sprite->Render();
     yellowlaser1Sprite->Render();
-    
+
     //------------------------------------------------------------------------
     // Example Sprite Code....
     bunnySprite->Render();
@@ -303,6 +303,9 @@ void MyGame::Render()
         App::DrawLine(sx, sy, ex, ey, r, g, b);
     }
     */
+
+    //To be called last
+    gameVp.RenderBorders();
 }
 
 void MyGame::Shutdown()
