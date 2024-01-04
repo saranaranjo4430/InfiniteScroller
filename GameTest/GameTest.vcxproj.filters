@@ -45,6 +45,15 @@
     <ClCompile Include="MyGame\Utils\ScrollingBackground.cpp">
       <Filter>MyGame\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="PaperGirl\MainCharacter.cpp">
+      <Filter>PaperGirl</Filter>
+    </ClCompile>
+    <ClCompile Include="PaperGirl\SpawnPoint.cpp">
+      <Filter>PaperGirl</Filter>
+    </ClCompile>
+    <ClCompile Include="PaperGirl\Props.cpp">
+      <Filter>PaperGirl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -96,6 +105,18 @@
     <ClInclude Include="MyGame\Utils\ScrollingBackground.h">
       <Filter>MyGame\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="PaperGirl\MainCharacter.h">
+      <Filter>PaperGirl</Filter>
+    </ClInclude>
+    <ClInclude Include="PaperGirl\SpawnPoint.h">
+      <Filter>PaperGirl</Filter>
+    </ClInclude>
+    <ClInclude Include="PaperGirl\Constants.h">
+      <Filter>PaperGirl</Filter>
+    </ClInclude>
+    <ClInclude Include="PaperGirl\Props.h">
+      <Filter>PaperGirl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="NextAPI">
@@ -112,9 +133,6 @@
     </Filter>
     <Filter Include="PaperGirl">
       <UniqueIdentifier>{9385c9c1-34a3-48dc-81fc-3eff656d5121}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GameSara">
-      <UniqueIdentifier>{a47ada21-7014-4e62-bced-2dca31f2c4b5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
