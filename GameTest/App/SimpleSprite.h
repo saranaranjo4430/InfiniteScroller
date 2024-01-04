@@ -45,9 +45,6 @@ public:
     int GetAnimationId() const { return m_animations[m_currentAnim].m_id; }
     bool IsAnimationFinished() const { return m_animFinished; }
 
-    int GetTextureWidth() const { return m_texWidth; }
-    int GetTextureHeight() const { return m_texHeight; }
-
 private:
     void CalculateUVs();
     GLuint m_texture;

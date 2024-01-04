@@ -11,8 +11,6 @@ CGameSprite::CGameSprite(const char* _fileName, int _columns, int _rows)
 {
     m_BaseSprite = App::CreateSprite(_fileName, _columns, _rows);
 
-    m_TextureSize = Vector2D((float)m_BaseSprite->GetTextureWidth(), (float)m_BaseSprite->GetTextureHeight());
-
     SetCollision(CollisionType::BOX, Vector2D(1.f, 1.f));
 }
 
@@ -155,4 +153,24 @@ bool CGameSprite::Overlap(const Ellipse2D& _other) const
         return m_CollisionCircle->Overlap(_other);
     }
     return false;
+}
+
+Vector2D CGameSprite::GetPixelSize() const
+{
+    return Vector2D(m_BaseSprite->GetWidth(), m_BaseSprite->GetHeight());
+}
+
+Vector2D CGameSprite::GetScreenSize() const
+{
+    float width = m_BaseSprite->GetWidth() / gameVp.GetWidth(1.f);
+    float height = m_BaseSprite->GetHeight() / gameVp.GetHeight(1.f);
+
+#if !APP_USE_VIRTUAL_RES
+    height *= (float)APP_INIT_WINDOW_WIDTH / APP_INIT_WINDOW_HEIGHT;
+#endif
+
+    float scalex = gameVp.GetVirtualScale(scale.x);
+    float scaley = gameVp.GetVirtualScale(scale.y);
+
+    return Vector2D(width*scalex, height*scaley);
 }
