@@ -19,10 +19,10 @@ SpawnPoint::~SpawnPoint()
 
 }
 
-void SpawnPoint::Init(const SpawnPointType& _type, float _refPosY)
+void SpawnPoint::Init(const SpawnPointType& _type, float _pivotPosY)
 {
     m_Type = _type;
-    m_RefPosY = _refPosY;
+    m_PivotPosY = _pivotPosY;
 
     m_ScrollingRatio = -1.f;
 }
@@ -52,7 +52,7 @@ void SpawnPoint::Update(float _deltaTime)
         }
         else
         {
-            float posX = Constants::Gameplay::offscreenSafePosX.max;
+            float posX = Constants::Background::offscreenSafeSpawnPos.max;
             if (m_Owner->RequestSpawnPointActivation(this, posX))
             {
                 SpawnObject(posX);
@@ -68,9 +68,11 @@ void SpawnPoint::Update(float _deltaTime)
         if (m_SpawnedObject)
         {
             m_SpawnedObject->sprite->position.x -= paperGirl->GetScrollingSpeed() * _deltaTime / 1000.f;
+            m_SpawnedObject->sprite->position.y = m_PivotPosY + m_SpawnedObject->GetSizeOnScreen().y * 0.5f;
+
             m_SpawnedObject->Update(_deltaTime);
 
-            if (m_SpawnedObject->sprite->position.x < Constants::Gameplay::offscreenSafePosX.min)
+            if (m_SpawnedObject->sprite->position.x < Constants::Background::offscreenSafeSpawnPos.min)
             {
                 if (m_Owner->RequestSpawnPointRemoval(this))
                 {
@@ -125,7 +127,7 @@ Vector2D SpawnPoint::GetPivotPos() const
 
     Vector2D pos;
     pos.x = m_SpawnedObject->sprite->position.x;
-    pos.y = m_RefPosY - m_SpawnedObject->sprite->GetScreenSize().y * 0.5f;
+    pos.y = m_PivotPosY;
     return pos;
 }
 
@@ -149,30 +151,27 @@ void SpawnPoint::SpawnObject(float _posX)
         case SpawnPointType::GRANDMA:
             m_SpawnedObject = new GrandMa();
             m_SpawnedObject->Init();
-            m_SpawnedObject->sprite->position.x = _posX;
-            m_SpawnedObject->sprite->position.y = m_RefPosY;
             m_SpawnedObject->sprite->scale = Vector2D(0.175f, 0.175f);
             break;
 
         case SpawnPointType::RECYCLEBIN:
             m_SpawnedObject = new RecycleBin();
             m_SpawnedObject->Init();
-            m_SpawnedObject->sprite->position.x = _posX;
-            m_SpawnedObject->sprite->position.y = m_RefPosY;
             m_SpawnedObject->sprite->scale = Vector2D(0.1f, 0.1f);
             break;
 
         case SpawnPointType::MAILBOX:
             m_SpawnedObject = new Mailbox();
             m_SpawnedObject->Init();
-            m_SpawnedObject->sprite->position.x = _posX;
-            m_SpawnedObject->sprite->position.y = m_RefPosY;
             m_SpawnedObject->sprite->scale = Vector2D(0.1f, 0.1f);
             break;
         }
     }
 
     assert(m_SpawnedObject);
+
+    m_SpawnedObject->sprite->position.x = _posX;
+    m_SpawnedObject->sprite->position.y = m_PivotPosY + m_SpawnedObject->GetSizeOnScreen().y * 0.5f;
 }
 
 void SpawnPoint::UnspawnObject()

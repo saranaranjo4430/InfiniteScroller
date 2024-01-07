@@ -32,8 +32,8 @@ void CGameSprite::Update(float _deltaTime)
     m_BaseSprite->SetAngle(Utils::DegToRad(angle));
 
     //Collision TRS
-    float scalex = gameVp.GetVirtualScale(scale.x * m_CollisionScale.x);
-    float scaley = gameVp.GetVirtualScale(scale.y * m_CollisionScale.y);
+    float scalex = scale.x * m_CollisionScale.x;
+    float scaley = scale.y * m_CollisionScale.y;
 
     if (m_CollisionBox)
     {
@@ -92,22 +92,22 @@ void CGameSprite::SetCollision(const CollisionType& type, const Vector2D& scale,
     safedelete(m_CollisionBox);
     safedelete(m_CollisionCircle);
 
-    float width = m_BaseSprite->GetWidth() / gameVp.GetWidth(1.f);
-    float height = m_BaseSprite->GetHeight() / gameVp.GetHeight(1.f);
-
-#if !APP_USE_VIRTUAL_RES
-    height *= (float)APP_INIT_WINDOW_WIDTH / APP_INIT_WINDOW_HEIGHT;
-#endif
+    float width = m_BaseSprite->GetWidth();
+    float height = m_BaseSprite->GetHeight();
 
     switch (type)
     {
     case CollisionType::BOX:
+        width /= gameVp.GetWidth();
+        height /= gameVp.GetHeight();
+
         m_CollisionBox = new Rect2D(Vector2D(0, 0), width, height);
         break;
 
     case CollisionType::CIRCLE:
+        float radius = max(width, height) * 0.5f;
+        radius /= gameVp.GetWidth();
 
-        float radius = min(width, height) * 0.5f;
         m_CollisionCircle = new Circle2D(Vector2D(0, 0), radius);
         break;
     }
@@ -155,22 +155,17 @@ bool CGameSprite::Overlap(const Ellipse2D& _other) const
     return false;
 }
 
-Vector2D CGameSprite::GetPixelSize() const
+Vector2D CGameSprite::GetTextureSize() const
 {
     return Vector2D(m_BaseSprite->GetWidth(), m_BaseSprite->GetHeight());
 }
 
-Vector2D CGameSprite::GetScreenSize() const
+Vector2D CGameSprite::GetSizeOnScreen() const
 {
-    float width = m_BaseSprite->GetWidth() / gameVp.GetWidth(1.f);
-    float height = m_BaseSprite->GetHeight() / gameVp.GetHeight(1.f);
+    Vector2D size = GetTextureSize();
 
-#if !APP_USE_VIRTUAL_RES
-    height *= (float)APP_INIT_WINDOW_WIDTH / APP_INIT_WINDOW_HEIGHT;
-#endif
+    size.x *= scale.x / gameVp.GetWidth();
+    size.y *= scale.y / gameVp.GetHeight();
 
-    float scalex = gameVp.GetVirtualScale(scale.x);
-    float scaley = gameVp.GetVirtualScale(scale.y);
-
-    return Vector2D(width*scalex, height*scaley);
+    return size;
 }

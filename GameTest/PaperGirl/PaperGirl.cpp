@@ -146,7 +146,7 @@ void PaperGirl::InitBackground()
     {
         float ratio = minRatio + (maxRatio - minRatio) * (i / (nbGrandMa - 1));
 
-        SpawnPoint* spawnPoint = CreateSpawnPoint(SpawnPointType::GRANDMA, 0.35f);
+        SpawnPoint* spawnPoint = CreateSpawnPoint(SpawnPointType::GRANDMA, Constants::Background::sideWalkPos);
         spawnPoint->AttachToBackground(ratio);
     }
 }
@@ -158,7 +158,7 @@ void PaperGirl::UpdateBackground(float _deltaTime)
     if (m_GameStarted)
     {
         //Scrolling speed
-        float target = Constants::Gameplay::scrollSpeed.min + (Constants::Gameplay::scrollSpeed.max - Constants::Gameplay::scrollSpeed.min) * Constants::Gameplay::difficultyFactor;
+        float target = Constants::Gameplay::scrollSpeed.min + (Constants::Gameplay::scrollSpeed.max - Constants::Gameplay::scrollSpeed.min) * m_DifficultyFactor;
         if (m_Background->scrollSpeed < target)
         {
             m_Background->scrollSpeed += Constants::Gameplay::scrollAccSpeed;
@@ -189,7 +189,7 @@ void PaperGirl::UpdateProps(float _deltaTime)
 
     for(m_SpawnPointsIt = m_SpawnPoints.begin(); m_SpawnPointsIt < m_SpawnPoints.end();)
     {
-        SpawnPoint* point = *m_SpawnPointsIt;
+        PropManipulator* point = *m_SpawnPointsIt;
         m_SpawnPointsIt++;
 
         point->Update(_deltaTime);
@@ -198,26 +198,28 @@ void PaperGirl::UpdateProps(float _deltaTime)
 
 void PaperGirl::RenderProps()
 {
-    bool mainCharacterRendered = false;
+    //Build display list
+    std::vector<PropManipulator*> displayedProps;
     
+    displayedProps.push_back(m_MainCharacter);
+
     for (auto point : m_SpawnPoints)
     {
         if (!point->IsSpawned())
             continue;
 
-        //Insert PaperGirl
-        if (!mainCharacterRendered && m_MainCharacter->GetPivotPos().y > point->GetPivotPos().y)
-        {
-            m_MainCharacter->Render();
-            mainCharacterRendered = true;
-        }
-
-        point->Render();
+        displayedProps.push_back(point);
     }
 
-    if (!mainCharacterRendered)
+    //Sort
+    std::sort(displayedProps.begin(), displayedProps.end(), [](PropManipulator* a, PropManipulator* b) {
+        return a->GetPivotPos().y > b->GetPivotPos().y;
+        });
+
+    //Draw
+    for (auto prop : displayedProps)
     {
-        m_MainCharacter->Render();
+        prop->Render();
     }
 }
 
@@ -230,29 +232,41 @@ void PaperGirl::UpdateLogic(float _deltaTime)
             ResetGame();
         }
 
-        //Increase difficulty depending on time
+        //Increase difficulty over time
         {
-            Constants::Gameplay::difficultyFactor += Constants::Gameplay::difficultyAccSpeed * _deltaTime / 1000.f;
-            (Constants::Gameplay::difficultyFactor > 1.f) ? Constants::Gameplay::difficultyFactor = 1.f : 0;
+            m_DifficultyFactor += Constants::Gameplay::difficultyIncSpeed * _deltaTime / 1000.f;
+            (m_DifficultyFactor > 1.f) ? m_DifficultyFactor = 1.f : 0;
+        }
+
+        //Increase coins over time
+        {
+            m_NbCoins += Constants::Gameplay::coinsIncSpeed * _deltaTime / 1000.f;
+        }
+
+        //Decrease boost
+        if (m_MainCharacter->IsBoosting())
+        {
+            float speed = Constants::Gameplay::boostDecSpeed.min + (Constants::Gameplay::boostDecSpeed.max - Constants::Gameplay::boostDecSpeed.min) * m_DifficultyFactor;
+            m_BoostLevel -= speed * _deltaTime / 1000.f;
+            (m_BoostLevel < 0.f) ? m_BoostLevel = 0.f : 0;
         }
 
         //Spawn Obstacles
         {
             //Don't spawn if a MailBox is too close
-            float minDistFromOther = GetClosestSpawnPoint(SpawnPointType::MAILBOX, Constants::Gameplay::offscreenSafePosX.max);
+            float minDistFromOther = GetClosestSpawnPoint(SpawnPointType::MAILBOX, Constants::Background::offscreenSafeSpawnPos.max);
             if (minDistFromOther >= 0.1f)
             {
-                float frequency = Constants::Gameplay::recycleBinFrequency.min + (Constants::Gameplay::recycleBinFrequency.max - Constants::Gameplay::recycleBinFrequency.min) * Constants::Gameplay::difficultyFactor;
+                float frequency = Constants::Gameplay::recycleBinFrequency.min + (Constants::Gameplay::recycleBinFrequency.max - Constants::Gameplay::recycleBinFrequency.min) * m_DifficultyFactor;
                 if (Utils::Random(0, 1) < frequency)
                 {
                     //Get Closest recycleBin
-                    float minDist = GetClosestSpawnPoint(SpawnPointType::RECYCLEBIN, Constants::Gameplay::offscreenSafePosX.max);
-                    float minAllowedSpace = Constants::Gameplay::recycleBinSpacing.min + (Constants::Gameplay::recycleBinSpacing.max - Constants::Gameplay::recycleBinSpacing.min) * Constants::Gameplay::difficultyFactor;
+                    float minDist = GetClosestSpawnPoint(SpawnPointType::RECYCLEBIN, Constants::Background::offscreenSafeSpawnPos.max);
+                    float minAllowedSpace = Constants::Gameplay::recycleBinSpacing.min + (Constants::Gameplay::recycleBinSpacing.max - Constants::Gameplay::recycleBinSpacing.min) * m_DifficultyFactor;
 
                     if (minDist >= minAllowedSpace)
                     {
-                        float posY = Constants::Gameplay::roadHeight.min + (Constants::Gameplay::roadHeight.max - Constants::Gameplay::roadHeight.min) * Utils::Random(0, 1);
-                        posY -= 0.02f; //Small delta to compensate texture size
+                        float posY = Constants::Background::roadZone.min + (Constants::Background::roadZone.max - Constants::Background::roadZone.min) * Utils::Random(0, 1);
 
                         CreateSpawnPoint(SpawnPointType::RECYCLEBIN, posY);
                     }
@@ -263,19 +277,19 @@ void PaperGirl::UpdateLogic(float _deltaTime)
         //Spawn Mailboxes
         {
             //Don't spawn if an obsctacle is too close
-            float minDistFromOther = GetClosestSpawnPoint(SpawnPointType::RECYCLEBIN, Constants::Gameplay::offscreenSafePosX.max);
+            float minDistFromOther = GetClosestSpawnPoint(SpawnPointType::RECYCLEBIN, Constants::Background::offscreenSafeSpawnPos.max);
             if (minDistFromOther >= 0.1f)
             {
-                float frequency = Constants::Gameplay::mailBoxFrequency.min + (Constants::Gameplay::mailBoxFrequency.max - Constants::Gameplay::mailBoxFrequency.min) * Constants::Gameplay::difficultyFactor;
+                float frequency = Constants::Gameplay::mailBoxFrequency.min + (Constants::Gameplay::mailBoxFrequency.max - Constants::Gameplay::mailBoxFrequency.min) * m_DifficultyFactor;
                 if (Utils::Random(0, 1) < frequency)
                 {
                     //Get Closest recycleBin
-                    float minDist = GetClosestSpawnPoint(SpawnPointType::MAILBOX, Constants::Gameplay::offscreenSafePosX.max);
-                    float minAllowedSpace = Constants::Gameplay::mailBoxSpacing.min + (Constants::Gameplay::mailBoxSpacing.max - Constants::Gameplay::mailBoxSpacing.min) * Constants::Gameplay::difficultyFactor;
+                    float minDist = GetClosestSpawnPoint(SpawnPointType::MAILBOX, Constants::Background::offscreenSafeSpawnPos.max);
+                    float minAllowedSpace = Constants::Gameplay::mailBoxSpacing.min + (Constants::Gameplay::mailBoxSpacing.max - Constants::Gameplay::mailBoxSpacing.min) * m_DifficultyFactor;
 
                     if (minDist >= minAllowedSpace)
                     {
-                        CreateSpawnPoint(SpawnPointType::MAILBOX, 0.06f);
+                        CreateSpawnPoint(SpawnPointType::MAILBOX, 0.0f);
                     }
                 }
             }
@@ -315,8 +329,8 @@ void PaperGirl::ResetGame()
     m_PressStartTimer = 0.f;
 
     m_BoostLevel = 1.f;
-    m_NbCoins = 0;
-    m_NbNewspaper = 0;
+    m_NbCoins = 0.f;
+    m_NbNewspaper = Constants::Gameplay::maxNewspaper;
 }
 
 const Range& PaperGirl::GetScrollingRatio() const
@@ -348,11 +362,6 @@ SpawnPoint* PaperGirl::CreateSpawnPoint(const SpawnPointType& _type, float _refP
 
     //Init
     point->Init(_type, _refPosY);
-
-    //Sort
-    std::sort(m_SpawnPoints.begin(), m_SpawnPoints.end(), [](SpawnPoint* a, SpawnPoint* b) {
-        return a->IsSpawned() && b->IsSpawned() && (a->GetPivotPos().y > b->GetPivotPos().y);
-        });
 
     return point;
 }
@@ -404,7 +413,7 @@ bool PaperGirl::RequestSpawnPointActivation(SpawnPoint* _point, float _posX)
     {
         //Get Closest GrandMa
         float minDist = GetClosestSpawnPoint(SpawnPointType::GRANDMA, _posX);
-        float minSpaceBetweenGrandMa = Constants::Gameplay::grandMaSpacing.min + (Constants::Gameplay::grandMaSpacing.max - Constants::Gameplay::grandMaSpacing.min) * Constants::Gameplay::difficultyFactor;
+        float minSpaceBetweenGrandMa = Constants::Gameplay::grandMaSpacing.min + (Constants::Gameplay::grandMaSpacing.max - Constants::Gameplay::grandMaSpacing.min) * m_DifficultyFactor;
 
         if (minDist < minSpaceBetweenGrandMa)
         {
@@ -412,7 +421,7 @@ bool PaperGirl::RequestSpawnPointActivation(SpawnPoint* _point, float _posX)
         }
 
         //Frequency
-        float frequency = Constants::Gameplay::grandMaFrequency.min + (Constants::Gameplay::grandMaFrequency.max - Constants::Gameplay::grandMaFrequency.min) * Constants::Gameplay::difficultyFactor;
+        float frequency = Constants::Gameplay::grandMaFrequency.min + (Constants::Gameplay::grandMaFrequency.max - Constants::Gameplay::grandMaFrequency.min) * m_DifficultyFactor;
         if (Utils::Random(0, 1) > frequency)
         {
             return false;
@@ -481,9 +490,20 @@ void PaperGirl::DrawDebug()
 {
     dbgY = 0.97f;
 
-    DrawDebugText("Difficulty", Constants::Gameplay::difficultyFactor);
+    DrawDebugText("Difficulty", m_DifficultyFactor);
+    DrawDebugText("Coins", m_NbCoins);
+    DrawDebugText("Newspaper", m_NbNewspaper);
+    DrawDebugText("Boost", m_BoostLevel);
 }
 
+void PaperGirl::DrawDebugText(const char* _text, int _value)
+{
+    char textBuffer[32];
+    sprintf(textBuffer, "%s: %d", _text, _value);
+    App::Print(gameVp.GetX(0.9f), gameVp.GetY(dbgY), textBuffer, 1.0f, 0.0f, 1.0f, GLUT_BITMAP_HELVETICA_10);
+
+    dbgY -= 0.025f;
+}
 void PaperGirl::DrawDebugText(const char* _text, float _value)
 {
     char textBuffer[32];
@@ -492,4 +512,5 @@ void PaperGirl::DrawDebugText(const char* _text, float _value)
 
     dbgY -= 0.025f;
 }
+
 #endif

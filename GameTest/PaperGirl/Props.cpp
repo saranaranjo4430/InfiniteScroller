@@ -10,23 +10,25 @@
 
 void Prop::Update(float _deltaTime)
 {
-    if (sprite)
-    {
-        sprite->Update(_deltaTime);
-    }
+    assert(sprite);
+    sprite->Update(_deltaTime);
 }
 
 void Prop::Render()
 {
-    if (sprite)
-    {
-        sprite->Render();
-    }
+    assert(sprite);
+    sprite->Render();
 }
 
 void Prop::Shutdown()
 {
     safedelete(sprite);
+}
+
+Vector2D Prop::GetSizeOnScreen() const
+{ 
+    assert(sprite);
+    return sprite->GetSizeOnScreen();
 }
 
 //------------------------------------------------------------------------
@@ -51,7 +53,7 @@ void TheGirl::Init()
     sprite->SetAnimation(ANIM_IDLE);
 
     //Init Collisions
-    sprite->SetCollision(CollisionType::CIRCLE, Vector2D(1.f, 1.f), Vector2D(-0.005f, -0.02f));
+    sprite->SetCollision(CollisionType::BOX, Vector2D(0.9f, 0.15f), Vector2D(-0.005f, -0.076f));
     sprite->AddFlag(GameSpriteFlags::DRAW_COLLISION);
 }
 
@@ -120,6 +122,13 @@ void TheGirl::Reset()
     sprite->position = Vector2D(0.25f, 0.25f);
     sprite->scale = Vector2D(1.f, 1.f);
     sprite->SetAnimation(ANIM_IDLE);
+
+    sprite->AddFlag(GameSpriteFlags::DRAW_COLLISION);
+}
+
+Vector2D TheGirl::GetSizeOnScreen() const
+{ 
+    return Prop::GetSizeOnScreen() * 0.85f;
 }
 
 //------------------------------------------------------------------------
@@ -135,6 +144,8 @@ void GrandMa::Init()
     sprite->CreateAnimation(ANIM_HAPPY, 0.f, { 2 });
 
     sprite->SetAnimation(ANIM_IDLE);
+
+    sprite->AddFlag(GameSpriteFlags::DRAW_COLLISION);
 }
 
 void GrandMa::Reset()
@@ -148,6 +159,9 @@ void RecycleBin::Init()
 {
     //Init Sprite
     sprite = new CGameSprite(".\\PaperGirl\\Data\\RecycleBin.bmp", 1, 1);
+
+    sprite->SetCollision(CollisionType::BOX, Vector2D(0.9f, 0.2f), Vector2D(0.0f, -0.05f));
+    sprite->AddFlag(GameSpriteFlags::DRAW_COLLISION);
 }
 
 //------------------------------------------------------------------------
@@ -156,5 +170,8 @@ void Mailbox::Init()
 {
     //Init Sprite
     sprite = new CGameSprite(".\\PaperGirl\\Data\\Mailbox.bmp", 1, 1);
+
+    sprite->SetCollision(CollisionType::BOX, Vector2D(1.f, 0.5f), Vector2D(0.0f, -0.03f));
+    sprite->AddFlag(GameSpriteFlags::DRAW_COLLISION);
 }
 

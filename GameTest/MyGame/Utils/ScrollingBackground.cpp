@@ -73,7 +73,7 @@ void ScrollingBackground::UpdateSprites(float _deltaTime)
 
         for (auto sprite : m_Sequence)
         {
-            float widthInPixel = sprite->GetPixelSize().x * scaleX;
+            float widthInPixel = sprite->GetTextureSize().x * scaleX;
 
             float offsetX = m_SequenceNbPixels + widthInPixel * 0.5f;
 
@@ -102,7 +102,7 @@ void ScrollingBackground::UpdateSprites(float _deltaTime)
 
         for (auto sprite : m_Sequence)
         {
-            float heightInPixel = sprite->GetPixelSize().y * scaleY;
+            float heightInPixel = sprite->GetTextureSize().y * scaleY;
 
             float offsetY = m_SequenceNbPixels + heightInPixel * 0.5f;
 
@@ -140,7 +140,7 @@ bool ScrollingBackground::UpdateScrollingRatio(float _deltaTime)
         float vpWidth = gameVp.GetX(1.f) - gameVp.GetX(0.f);
         float scaleX = gameVp.GetScaleX(scale.x);
 
-        float widthInPixel = m_VisibleSprite->GetPixelSize().x * scaleX;
+        float widthInPixel = m_VisibleSprite->GetTextureSize().x * scaleX;
         float minX = m_VisibleSprite->position.x * vpWidth - widthInPixel * 0.5f;
 
         //End of sequence, loop
@@ -162,7 +162,7 @@ bool ScrollingBackground::UpdateScrollingRatio(float _deltaTime)
         float vpHeight = gameVp.GetY(1.f) - gameVp.GetY(0.f);
         float scaleY = gameVp.GetScaleY(scale.y);
 
-        float heightInPixel = m_VisibleSprite->GetPixelSize().y * scaleY;
+        float heightInPixel = m_VisibleSprite->GetTextureSize().y * scaleY;
         float minY = m_VisibleSprite->position.y * vpHeight - heightInPixel * 0.5f;
 
         //End of sequence, loop

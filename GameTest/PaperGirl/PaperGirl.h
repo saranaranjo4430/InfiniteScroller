@@ -58,6 +58,7 @@ protected:
 
 #ifdef _DEBUG
     void DrawDebug();
+    void DrawDebugText(const char* _text, int _value);
     void DrawDebugText(const char* _text, float _value);
 #endif
 
@@ -65,11 +66,12 @@ private:
     const CController* m_ActiveController;
 
     MainCharacter* m_MainCharacter;
-    ScrollingBackground* m_Background;
-
+    
     std::vector<SpawnPoint*> m_SpawnPoints;
     std::vector<SpawnPoint*> m_SpawnPointsPool;
     std::vector<SpawnPoint*>::iterator m_SpawnPointsIt;
+
+    ScrollingBackground* m_Background;
 
     CGameSprite* m_Title;
     CGameSprite* m_PressStart;
@@ -78,7 +80,8 @@ private:
     bool m_PressStartVisible = true;
     float m_PressStartTimer = 0.f;
 
+    float m_DifficultyFactor = 0.f;                   //0.f easy, 1.f hell on earth
     float m_BoostLevel = 1.f;
-    int m_NbCoins = 0;
+    float m_NbCoins = 0.f;
     int m_NbNewspaper = 0;
 };

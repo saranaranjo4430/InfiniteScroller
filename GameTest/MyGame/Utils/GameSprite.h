@@ -47,8 +47,8 @@ public:
     bool IsPlaying(int id) const;
 
     //Sprite Texture Overrides
-    Vector2D GetPixelSize() const;
-    Vector2D GetScreenSize() const;
+    Vector2D GetTextureSize() const;
+    Vector2D GetSizeOnScreen() const;
 
 public:
     Vector2D position = Vector2D(0.5f, 0.5f);

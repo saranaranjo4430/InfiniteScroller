@@ -5,6 +5,16 @@
 
 class CGameSprite;
 
+class PropManipulator
+{
+public:
+    virtual void Update(float _deltaTime) = 0;
+    virtual void Render() = 0;
+
+    virtual Vector2D GetCenterPos() const = 0;
+    virtual Vector2D GetPivotPos() const = 0;
+};
+
 class Prop
 {
 public:
@@ -18,12 +28,9 @@ public:
 
     virtual void Reset() {};
 
+    virtual Vector2D GetSizeOnScreen() const;
+
     CGameSprite* sprite;
-};
-
-class PropLogic
-{
-
 };
 
 class TheGirl : public Prop
@@ -50,6 +57,8 @@ public:
     void Init();
     void SetAnimation(const Animation& _anim);
     void Reset();
+
+    virtual Vector2D GetSizeOnScreen() const;
 };
 
 class GrandMa : public Prop

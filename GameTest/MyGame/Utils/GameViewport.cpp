@@ -100,9 +100,8 @@ float GameViewport::GetHeight(float _percent) const
 
 float GameViewport::GetScaleX(float _scale) const
 {
-    float ratio = GetWidth(1.f) / (float)m_VpHeight;
+    float ratio = GetWidth(1.f) / (float)m_VpWidth;
     ratio *= _scale;
-    ratio /= m_VpRatio;
     return ratio;
 }
 
@@ -111,18 +110,6 @@ float GameViewport::GetScaleY(float _scale) const
     float ratio = GetHeight(1.f) / (float)m_VpHeight;
     ratio *= _scale;
     return ratio;
-}
-
-float GameViewport::GetVirtualScale(float _scale) const
-{
-    float scale = GetScaleX(_scale);
-
-    float appWindowRatio = (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT;
-    if (appWindowRatio > m_VpRatio)
-    {
-        scale *= appWindowRatio / m_VpRatio;
-    }
-    return scale;
 }
 
 float GameViewport::GetXInPixel(float _percent) const
