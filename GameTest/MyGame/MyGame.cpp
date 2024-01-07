@@ -102,7 +102,7 @@ void MyGame::Init(int width, int height)
     m_MovingCircle = Circle2D(Vector2D(0.75f, 0.5f), 0.125f);
     m_StaticCircle = Circle2D(Vector2D(0.25f, 0.5f), 0.125f);
 
-    m_RotatingRect.Scale(0.5f, 0.5f);
+    m_RotatingRect.Scale(0.5f);
 }
 
 void MyGame::Update(float _deltaTime)
