@@ -1,8 +1,5 @@
 #pragma once
 
-#include <map>
-#include <vector>
-
 #include "Vectors.h"
 #include "GameViewport.h"
 
@@ -50,7 +47,8 @@ public:
     bool IsPlaying(int id) const;
 
     //Sprite Texture Overrides
-    Vector2D GetTextureSize() const { return m_TextureSize; }
+    Vector2D GetTextureSize() const;
+    Vector2D GetSizeOnScreen() const;
 
 public:
     Vector2D position = Vector2D(0.5f, 0.5f);
@@ -59,7 +57,6 @@ public:
 
 private:
     CSimpleSprite* m_BaseSprite = nullptr;
-    Vector2D m_TextureSize;
 
     Rect2D* m_CollisionBox = nullptr;
     Ellipse2D* m_CollisionCircle = nullptr;

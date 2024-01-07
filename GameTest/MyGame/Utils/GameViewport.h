@@ -21,7 +21,9 @@ public:
     
     //Viewport Ratio
     inline float GetRatio() const { return m_VpRatio; }
-    
+    inline float GetWidth() const { return (float)m_VpWidth; }
+    inline float GetHeight() const { return (float)m_VpHeight; }
+        
     //Converts a viewport percentage to an app window coordinates (virtual or native)
     float GetX(float _percent) const;
 
@@ -40,9 +42,7 @@ public:
     //Converts a viewport scale to an app window scale
     float GetScaleY(float _scale) const;
 
-public:
-    float GetVirtualScale(float _scale) const;
-
+    //Viewport Flags
     inline void AddFlag(ViewportFlags flags) { m_Flags |= flags; }
     inline void RemoveFlag(ViewportFlags flags) { m_Flags &= ~flags; }
     inline bool HasFlag(ViewportFlags flags) { return (m_Flags & flags); }

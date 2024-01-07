@@ -17,6 +17,8 @@ UnitTests* unitTests;
 
 bool useUnitTests = false;
 
+bool firstUpdate = false;
+
 //------------------------------------------------------------------------
 // Called before first update. Do any initial setup here.
 //------------------------------------------------------------------------
@@ -48,6 +50,8 @@ void Update(float deltaTime)
 	{
 		myGame->Update(deltaTime);
 	}
+
+	firstUpdate = true;
 }
 
 //------------------------------------------------------------------------
@@ -56,6 +60,11 @@ void Update(float deltaTime)
 //------------------------------------------------------------------------
 void Render()
 {	
+	if (!firstUpdate)
+	{
+		return;
+	}
+
 	if (useUnitTests)
 	{
 		unitTests->Render();
