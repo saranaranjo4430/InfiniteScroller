@@ -21,13 +21,13 @@ public:
     virtual bool RequestSpawnPointRemoval(SpawnPoint* _point) = 0;
 };
 
-class SpawnPoint : public PropLogic
+class SpawnPoint : public PropManipulator
 {
 public:
     SpawnPoint(SpawnPointOwner* _owner);
     ~SpawnPoint();
 
-    void Init(const SpawnPointType& _type, float _refPosY);
+    void Init(const SpawnPointType& _type, float _pivotPosY);
     void Update(float _deltaTime);
     void Render();
     void Shutdown();
@@ -41,6 +41,7 @@ public:
     float GetBackgroundRatio() const { return m_ScrollingRatio; }
 
     bool IsSpawned() const { return (m_SpawnedObject != nullptr); }
+
     Vector2D GetCenterPos() const;
     Vector2D GetPivotPos() const;
 
@@ -51,10 +52,11 @@ protected:
     bool IsRatioInView() const;
 
 private:
-    SpawnPointOwner* m_Owner;
+    SpawnPointOwner* m_Owner = nullptr;
     SpawnPointType m_Type;
+
     float m_ScrollingRatio;
-    float m_RefPosY;
+    float m_PivotPosY;
 
     Prop* m_SpawnedObject = nullptr;
     bool m_SpawnAsked = false;

@@ -78,7 +78,10 @@ void MainCharacter::Update(float _deltaTime)
         }
 
         m_Prop->sprite->position.y += VDisp * YFactor;
-        m_Prop->sprite->position.y = Utils::Clampf(m_Prop->sprite->position.y, Constants::Gameplay::roadHeight.min, Constants::Gameplay::roadHeight.max);
+
+        Vector2D pivotPos = GetPivotPos();
+        float clampedPosY = Utils::Clampf(pivotPos.y, Constants::Background::roadZone.min, Constants::Background::roadZone.max);
+        m_Prop->sprite->position.y += (clampedPosY - pivotPos.y);
     }
 
     //Update sprite
@@ -102,11 +105,21 @@ void MainCharacter::Reset()
     m_NextAnimation = TheGirl::ANIM_IDLE;
 }
 
+bool MainCharacter::IsBoosting() const
+{
+    return m_Prop->sprite->IsPlaying(TheGirl::ANIM_MOVE_FAST);
+}
+
+Vector2D MainCharacter::GetCenterPos() const
+{
+    return m_Prop->sprite->position;
+}
+
 Vector2D MainCharacter::GetPivotPos() const
 {
     Vector2D pos;
     pos.x = m_Prop->sprite->position.x;
-    pos.y = m_Prop->sprite->position.y - m_Prop->sprite->GetScreenSize().y * Constants::TheGirl::textureMargin;
+    pos.y = m_Prop->sprite->position.y - m_Prop->GetSizeOnScreen().y * 0.5f;
     return pos;
 }
 

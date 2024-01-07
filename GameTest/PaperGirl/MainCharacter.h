@@ -5,7 +5,7 @@
 
 #include "Props.h"
 
-class MainCharacter : public PropLogic
+class MainCharacter : public PropManipulator
 {
 public:
     MainCharacter();
@@ -18,6 +18,9 @@ public:
 
     void Reset();
 
+    bool IsBoosting() const;
+
+    Vector2D GetCenterPos() const;
     Vector2D GetPivotPos() const;
 
 private:
