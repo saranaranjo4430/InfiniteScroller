@@ -1,6 +1,9 @@
 #pragma once
 
 #define safedelete(p) if (p) delete p; p=nullptr;
+#define STICK_THRESHOLD 0.2f
+
+class CController;
 
 namespace Utils
 {
@@ -29,4 +32,19 @@ namespace Utils
     float Clampf(float value, float min, float max);
     float DegToRad(float degrees);
     float RadToDeg(float radians);
+    float Random(float fMin, float fMax);
+    float Epsilon();
 }
+
+struct Range
+{
+    Range() { }
+    Range(float _min, float _max)
+    {
+        min = _min;
+        max = _max;
+    };
+
+    float min = 0.f;
+    float max = 0.f;
+};
