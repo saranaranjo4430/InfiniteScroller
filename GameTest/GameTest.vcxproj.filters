@@ -39,20 +39,8 @@
     <ClCompile Include="MyGame\UnitTests.cpp">
       <Filter>MyGame</Filter>
     </ClCompile>
-    <ClCompile Include="PaperGirl\PaperGirl.cpp">
-      <Filter>PaperGirl</Filter>
-    </ClCompile>
     <ClCompile Include="MyGame\Utils\ScrollingBackground.cpp">
       <Filter>MyGame\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="PaperGirl\MainCharacter.cpp">
-      <Filter>PaperGirl</Filter>
-    </ClCompile>
-    <ClCompile Include="PaperGirl\SpawnPoint.cpp">
-      <Filter>PaperGirl</Filter>
-    </ClCompile>
-    <ClCompile Include="PaperGirl\Props.cpp">
-      <Filter>PaperGirl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -99,23 +87,8 @@
     <ClInclude Include="MyGame\UnitTests.h">
       <Filter>MyGame</Filter>
     </ClInclude>
-    <ClInclude Include="PaperGirl\PaperGirl.h">
-      <Filter>PaperGirl</Filter>
-    </ClInclude>
     <ClInclude Include="MyGame\Utils\ScrollingBackground.h">
       <Filter>MyGame\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="PaperGirl\MainCharacter.h">
-      <Filter>PaperGirl</Filter>
-    </ClInclude>
-    <ClInclude Include="PaperGirl\SpawnPoint.h">
-      <Filter>PaperGirl</Filter>
-    </ClInclude>
-    <ClInclude Include="PaperGirl\Constants.h">
-      <Filter>PaperGirl</Filter>
-    </ClInclude>
-    <ClInclude Include="PaperGirl\Props.h">
-      <Filter>PaperGirl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -130,9 +103,6 @@
     </Filter>
     <Filter Include="MyGame\Utils">
       <UniqueIdentifier>{eb718187-7fd8-4ea4-98fa-5eb573c832bb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PaperGirl">
-      <UniqueIdentifier>{9385c9c1-34a3-48dc-81fc-3eff656d5121}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
