@@ -38,7 +38,7 @@ void SpawnPoint::Update(float _deltaTime)
             if (IsRatioInView())
             {
                 const Range& scrollRatio = paperGirl->GetScrollingRatio();
-                float posX = (m_ScrollingRatio - scrollRatio.min) / (scrollRatio.max - scrollRatio.min);
+                float posX = ((m_ScrollingRatio + 0.01f) - scrollRatio.min) / (scrollRatio.max - scrollRatio.min);
 
                 if (m_Owner->RequestSpawnPointActivation(this, posX))
                 {
@@ -115,6 +115,12 @@ bool SpawnPoint::IsAttachedToBackground() const
     return m_ScrollingRatio >= 0.f;
 }
 
+CGameSprite* SpawnPoint::GetSprite() const
+{
+    assert(m_SpawnedObject);
+    return m_SpawnedObject->sprite;
+}
+
 Vector2D SpawnPoint::GetCenterPos() const
 { 
     assert(m_SpawnedObject);
@@ -131,10 +137,15 @@ Vector2D SpawnPoint::GetPivotPos() const
     return pos;
 }
 
+bool SpawnPoint::Overlap(const PropManipulator* _other) const
+{
+    return GetSprite()->Overlap(_other->GetSprite());
+}
+
 bool SpawnPoint::IsRatioInView() const
 {
     const Range& scrollRatio = paperGirl->GetScrollingRatio();
-    if (m_ScrollingRatio >= scrollRatio.min && m_ScrollingRatio <= scrollRatio.max)
+    if (scrollRatio.min <= m_ScrollingRatio && m_ScrollingRatio <= scrollRatio.max)
     {
         return true;
     }

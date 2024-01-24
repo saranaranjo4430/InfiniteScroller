@@ -80,7 +80,7 @@ void MainCharacter::Update(float _deltaTime)
         m_Prop->sprite->position.y += VDisp * YFactor;
 
         Vector2D pivotPos = GetPivotPos();
-        float clampedPosY = Utils::Clampf(pivotPos.y, Constants::Background::roadZone.min, Constants::Background::roadZone.max);
+        float clampedPosY = Utils::Clamp(pivotPos.y, Constants::Background::roadZone.min, Constants::Background::roadZone.max);
         m_Prop->sprite->position.y += (clampedPosY - pivotPos.y);
     }
 
@@ -110,6 +110,11 @@ bool MainCharacter::IsBoosting() const
     return m_Prop->sprite->IsPlaying(TheGirl::ANIM_MOVE_FAST);
 }
 
+CGameSprite* MainCharacter::GetSprite() const
+{
+    return m_Prop->sprite;
+}
+
 Vector2D MainCharacter::GetCenterPos() const
 {
     return m_Prop->sprite->position;
@@ -123,3 +128,7 @@ Vector2D MainCharacter::GetPivotPos() const
     return pos;
 }
 
+bool MainCharacter::Overlap(const PropManipulator* _other) const
+{
+    return GetSprite()->Overlap(_other->GetSprite());
+}

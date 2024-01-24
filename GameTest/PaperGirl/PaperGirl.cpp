@@ -25,11 +25,11 @@ void PaperGirl::Init(int width, int height)
 {
     gameVp.Init(width, height);
     gameVp.AddFlag(ViewportFlags::DRAW_VIEWPORT);
-    //m_GameVp.AddFlag(ViewportFlags::DRAW_BORDERS);
 
     InitTitle();
     InitBackground();
-    InitMainCharacter();
+    InitProps();
+    InitLogic();
 
     ResetGame();
 }
@@ -162,12 +162,12 @@ void PaperGirl::UpdateBackground(float _deltaTime)
         if (m_Background->scrollSpeed < target)
         {
             m_Background->scrollSpeed += Constants::Gameplay::scrollAccSpeed;
-            (m_Background->scrollSpeed > target) ? m_Background->scrollSpeed = target : 0;
+            m_Background->scrollSpeed = Utils::ClampMax(m_Background->scrollSpeed, target);
         }
         else
         {
             m_Background->scrollSpeed -= Constants::Gameplay::scrollAccSpeed;
-            (m_Background->scrollSpeed < target) ? m_Background->scrollSpeed = target : 0;
+            m_Background->scrollSpeed = Utils::ClampMin(m_Background->scrollSpeed, target);
         }
     }
 }
@@ -177,7 +177,7 @@ void PaperGirl::RenderBackground()
     m_Background->Render();
 }
 
-void PaperGirl::InitMainCharacter()
+void PaperGirl::InitProps()
 {
     m_MainCharacter = new MainCharacter();
     m_MainCharacter->Init();
@@ -223,6 +223,13 @@ void PaperGirl::RenderProps()
     }
 }
 
+void PaperGirl::InitLogic()
+{
+    m_RecycleBinfreq.Init(Constants::Gameplay::recycleBinFrequency, &m_DifficultyFactor, 0.33f);
+    m_MailBoxfreq.Init(Constants::Gameplay::mailBoxFrequency, &m_DifficultyFactor, 0.33f);
+    m_GrandMafreq.Init(Constants::Gameplay::grandMaFrequency, &m_DifficultyFactor, 0.33f);
+}
+
 void PaperGirl::UpdateLogic(float _deltaTime)
 {
     if (m_GameStarted)
@@ -235,7 +242,7 @@ void PaperGirl::UpdateLogic(float _deltaTime)
         //Increase difficulty over time
         {
             m_DifficultyFactor += Constants::Gameplay::difficultyIncSpeed * _deltaTime / 1000.f;
-            (m_DifficultyFactor > 1.f) ? m_DifficultyFactor = 1.f : 0;
+            m_DifficultyFactor = Utils::ClampMax(m_DifficultyFactor, 1.f);
         }
 
         //Increase coins over time
@@ -248,49 +255,63 @@ void PaperGirl::UpdateLogic(float _deltaTime)
         {
             float speed = Constants::Gameplay::boostDecSpeed.min + (Constants::Gameplay::boostDecSpeed.max - Constants::Gameplay::boostDecSpeed.min) * m_DifficultyFactor;
             m_BoostLevel -= speed * _deltaTime / 1000.f;
-            (m_BoostLevel < 0.f) ? m_BoostLevel = 0.f : 0;
+            m_BoostLevel = Utils::ClampMin(m_BoostLevel, 0.f);
         }
 
-        //Spawn Obstacles
+        //Collision with Mailbox
         {
-            //Don't spawn if a MailBox is too close
-            float minDistFromOther = GetClosestSpawnPoint(SpawnPointType::MAILBOX, Constants::Background::offscreenSafeSpawnPos.max);
-            if (minDistFromOther >= 0.1f)
+            for(auto point : m_SpawnPoints)
             {
-                float frequency = Constants::Gameplay::recycleBinFrequency.min + (Constants::Gameplay::recycleBinFrequency.max - Constants::Gameplay::recycleBinFrequency.min) * m_DifficultyFactor;
-                if (Utils::Random(0, 1) < frequency)
+                if (!point->IsSpawned())
+                    continue;
+                
+                if (point->GetType() == MAILBOX)
                 {
-                    //Get Closest recycleBin
-                    float minDist = GetClosestSpawnPoint(SpawnPointType::RECYCLEBIN, Constants::Background::offscreenSafeSpawnPos.max);
-                    float minAllowedSpace = Constants::Gameplay::recycleBinSpacing.min + (Constants::Gameplay::recycleBinSpacing.max - Constants::Gameplay::recycleBinSpacing.min) * m_DifficultyFactor;
-
-                    if (minDist >= minAllowedSpace)
+                    if (m_MainCharacter->Overlap(point))
                     {
-                        float posY = Constants::Background::roadZone.min + (Constants::Background::roadZone.max - Constants::Background::roadZone.min) * Utils::Random(0, 1);
-
-                        CreateSpawnPoint(SpawnPointType::RECYCLEBIN, posY);
+                        if (m_ActiveController && m_ActiveController->CheckButton(XINPUT_GAMEPAD_A, false))
+                        {
+                            m_NbNewspaper++; // = Constants::Gameplay::maxNewspaper;
+                        }
                     }
                 }
             }
         }
 
+        //Spawn Obstacles
+        if (m_RecycleBinfreq.Hits())
+        {
+            //Don't spawn if a MailBox is too close
+            float minDistFromOther = GetClosestSpawnPoint(SpawnPointType::MAILBOX, Constants::Background::offscreenSafeSpawnPos.max);
+            if (minDistFromOther >= 0.075f)
+            {
+                //Get Closest recycleBin
+                float minDist = GetClosestSpawnPoint(SpawnPointType::RECYCLEBIN, Constants::Background::offscreenSafeSpawnPos.max);
+                float minAllowedSpace = Constants::Gameplay::recycleBinSpacing.min + (Constants::Gameplay::recycleBinSpacing.max - Constants::Gameplay::recycleBinSpacing.min) * m_DifficultyFactor;
+
+                if (minDist >= minAllowedSpace)
+                {
+                    float posY = Constants::Background::roadZone.min + (Constants::Background::roadZone.max - Constants::Background::roadZone.min) * Utils::Random(0, 1);
+
+                    CreateSpawnPoint(SpawnPointType::RECYCLEBIN, posY);
+                }
+            }
+        }
+
         //Spawn Mailboxes
+        if (m_MailBoxfreq.Hits())
         {
             //Don't spawn if an obsctacle is too close
             float minDistFromOther = GetClosestSpawnPoint(SpawnPointType::RECYCLEBIN, Constants::Background::offscreenSafeSpawnPos.max);
-            if (minDistFromOther >= 0.1f)
+            if (minDistFromOther >= 0.075f)
             {
-                float frequency = Constants::Gameplay::mailBoxFrequency.min + (Constants::Gameplay::mailBoxFrequency.max - Constants::Gameplay::mailBoxFrequency.min) * m_DifficultyFactor;
-                if (Utils::Random(0, 1) < frequency)
-                {
-                    //Get Closest recycleBin
-                    float minDist = GetClosestSpawnPoint(SpawnPointType::MAILBOX, Constants::Background::offscreenSafeSpawnPos.max);
-                    float minAllowedSpace = Constants::Gameplay::mailBoxSpacing.min + (Constants::Gameplay::mailBoxSpacing.max - Constants::Gameplay::mailBoxSpacing.min) * m_DifficultyFactor;
+                //Get Closest mailbox
+                float minDist = GetClosestSpawnPoint(SpawnPointType::MAILBOX, Constants::Background::offscreenSafeSpawnPos.max);
+                float minAllowedSpace = Constants::Gameplay::mailBoxSpacing.min + (Constants::Gameplay::mailBoxSpacing.max - Constants::Gameplay::mailBoxSpacing.min) * m_DifficultyFactor;
 
-                    if (minDist >= minAllowedSpace)
-                    {
-                        CreateSpawnPoint(SpawnPointType::MAILBOX, 0.0f);
-                    }
+                if (minDist >= minAllowedSpace)
+                {
+                    CreateSpawnPoint(SpawnPointType::MAILBOX, 0.0f);
                 }
             }
         }
@@ -302,6 +323,11 @@ void PaperGirl::UpdateLogic(float _deltaTime)
             StartGame();
         }
     }
+
+    //Frequencies
+    m_RecycleBinfreq.Update(_deltaTime);
+    m_MailBoxfreq.Update(_deltaTime);
+    m_GrandMafreq.Update(_deltaTime);
 }
 
 void PaperGirl::StartGame()
@@ -330,7 +356,7 @@ void PaperGirl::ResetGame()
 
     m_BoostLevel = 1.f;
     m_NbCoins = 0.f;
-    m_NbNewspaper = Constants::Gameplay::maxNewspaper;
+    m_NbNewspaper = 0; // Constants::Gameplay::maxNewspaper;
 }
 
 const Range& PaperGirl::GetScrollingRatio() const
@@ -414,20 +440,7 @@ bool PaperGirl::RequestSpawnPointActivation(SpawnPoint* _point, float _posX)
         //Get Closest GrandMa
         float minDist = GetClosestSpawnPoint(SpawnPointType::GRANDMA, _posX);
         float minSpaceBetweenGrandMa = Constants::Gameplay::grandMaSpacing.min + (Constants::Gameplay::grandMaSpacing.max - Constants::Gameplay::grandMaSpacing.min) * m_DifficultyFactor;
-
-        if (minDist < minSpaceBetweenGrandMa)
-        {
-            return false;
-        }
-
-        //Frequency
-        float frequency = Constants::Gameplay::grandMaFrequency.min + (Constants::Gameplay::grandMaFrequency.max - Constants::Gameplay::grandMaFrequency.min) * m_DifficultyFactor;
-        if (Utils::Random(0, 1) > frequency)
-        {
-            return false;
-        }
-
-        return true;
+        return (minDist > minSpaceBetweenGrandMa && m_GrandMafreq.Hits());
     }
 
     return true;
@@ -512,5 +525,42 @@ void PaperGirl::DrawDebugText(const char* _text, float _value)
 
     dbgY -= 0.025f;
 }
-
 #endif
+
+void Frequency::Init(const Range& _range, float* _rangeFactor, float _period)
+{
+    m_Range = _range;
+    m_RangeFactor = _rangeFactor;
+    m_Period = _period;
+
+    m_Time = _period;
+    m_Available = false;
+}
+
+void Frequency::Update(float _deltaTime)
+{
+    m_Time += _deltaTime / 1000.f;
+    if (m_Time >= m_Period)
+    {
+        m_Frequency = m_Range.min + (m_Range.max - m_Range.min) * (*m_RangeFactor);
+        m_Available = true;
+        m_Time = 0.f;
+    }
+}
+
+bool Frequency::Hits()
+{
+    if (m_Available)
+    {
+        m_Available = false;
+
+        if (Utils::Random(0, 1) <= m_Frequency)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+

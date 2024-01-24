@@ -10,6 +10,26 @@ class CController;
 class ScrollingBackground;
 class MainCharacter;
 
+class Frequency
+{
+public:
+    Frequency() {};
+
+    void Init(const Range& _range, float* _rangeFactor, float _period);
+    void Update(float _deltaTime);
+
+    bool Hits();
+
+private:
+    Range m_Range;
+    float* m_RangeFactor = nullptr;
+
+    float m_Frequency = 0.f;
+    float m_Period = 0.f;
+    float m_Time = 0.f;
+    bool m_Available = false;
+};
+
 class PaperGirl : public SpawnPointOwner
 {
 public:
@@ -45,11 +65,11 @@ protected:
     void UpdateBackground(float _deltaTime);
     void RenderBackground();
 
-    void InitMainCharacter();
-
+    void InitProps();
     void UpdateProps(float _deltaTime);
     void RenderProps();
 
+    void InitLogic();
     void UpdateLogic(float _deltaTime);
 
     SpawnPoint* CreateSpawnPoint(const SpawnPointType& _type, float _refPosY);
@@ -84,4 +104,8 @@ private:
     float m_BoostLevel = 1.f;
     float m_NbCoins = 0.f;
     int m_NbNewspaper = 0;
+
+    Frequency m_RecycleBinfreq;
+    Frequency m_MailBoxfreq;
+    Frequency m_GrandMafreq;
 };

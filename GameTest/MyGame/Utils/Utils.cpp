@@ -1,6 +1,9 @@
 //------------------------------------------------------------------------
 #include "stdafx.h"
 
+#include <chrono>
+#include <random>
+
 #include "..\app\app.h"
 #include "..\app\main.h"
 
@@ -46,9 +49,19 @@ namespace Utils
         return NULL;
     }
 
-    float Clampf(float value, float min, float max)
+    float Clamp(float value, float min, float max)
     {
         return (value < min) ? min : (value > max) ? max : value;
+    }
+
+    float ClampMin(float value, float min)
+    {
+        return (value < min) ? min : value;
+    }
+
+    float ClampMax(float value, float max)
+    {
+        return (value > max) ? max : value;
     }
 
     float DegToRad(float degrees)
@@ -63,8 +76,12 @@ namespace Utils
 
     float Random(float fMin, float fMax)
     {
-        double f = (double)rand() / RAND_MAX;
-        return (float)(fMin + f * (fMax - fMin));
+        // initialize the random number generator with time-dependent seed
+        uint64_t timeSeed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        std::seed_seq seed{ uint32_t(timeSeed & 0xffffffff), uint32_t(timeSeed >> 32) };
+        auto urbg = std::mt19937{ seed };
+        auto norm = std::uniform_real_distribution<float>{ fMin, fMax };
+        return norm(urbg);
     }
 
     float Epsilon()

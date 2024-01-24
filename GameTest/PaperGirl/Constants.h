@@ -25,7 +25,7 @@ namespace Constants
         static Range scrollSpeed = Range(0.08f, 0.20f);         //Min & Max depends on difficulty factor
 
         static Range grandMaSpacing = Range(0.25f, 0.5f);       //Min & Max depends on difficulty factor
-        static Range grandMaFrequency = Range(0.95f, 0.5f);     //Min & Max depends on difficulty factor
+        static Range grandMaFrequency = Range(0.65f, 0.35f);     //Min & Max depends on difficulty factor
 
         static Range recycleBinSpacing = Range(0.4f, 0.2f);     //Min & Max depends on difficulty factor
         static Range recycleBinFrequency = Range(0.3f, 0.8f);   //Min & Max depends on difficulty factor

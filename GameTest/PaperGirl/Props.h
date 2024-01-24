@@ -11,8 +11,12 @@ public:
     virtual void Update(float _deltaTime) = 0;
     virtual void Render() = 0;
 
+    virtual CGameSprite* GetSprite() const = 0;
+
     virtual Vector2D GetCenterPos() const = 0;
     virtual Vector2D GetPivotPos() const = 0;
+
+    virtual bool Overlap(const PropManipulator* _other) const = 0;
 };
 
 class Prop

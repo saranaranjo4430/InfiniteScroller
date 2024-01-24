@@ -42,8 +42,12 @@ public:
 
     bool IsSpawned() const { return (m_SpawnedObject != nullptr); }
 
-    Vector2D GetCenterPos() const;
-    Vector2D GetPivotPos() const;
+    CGameSprite* GetSprite() const override;
+
+    Vector2D GetCenterPos() const override;
+    Vector2D GetPivotPos() const override;
+
+    bool Overlap(const PropManipulator* _other) const override;
 
 protected:
     void SpawnObject(float _posX);

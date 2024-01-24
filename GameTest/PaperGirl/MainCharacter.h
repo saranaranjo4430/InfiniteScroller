@@ -20,8 +20,12 @@ public:
 
     bool IsBoosting() const;
 
-    Vector2D GetCenterPos() const;
-    Vector2D GetPivotPos() const;
+    CGameSprite* GetSprite() const override;
+
+    Vector2D GetCenterPos() const override;
+    Vector2D GetPivotPos() const override;
+
+    bool Overlap(const PropManipulator* _other) const override;
 
 private:
     TheGirl* m_Prop = nullptr;
