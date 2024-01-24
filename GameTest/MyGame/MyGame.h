@@ -20,6 +20,12 @@ public:
     void Shutdown();
     void Restart();
 
+    void UpdateBackground(float _deltaTime, float VSpeed);
+    void UpdateLasers(float _deltaTime, float VSpeed);
+    void UpdateBunnySprite(float _deltaTime, const CController* pController, float HSpeed, float VSpeed);
+    void ManageBunnyBounds();
+    void HandleDifficulty();
+
 private:
     //------------------------------------------------------------------------
   
@@ -67,5 +73,7 @@ private:
     };
 
     float m_TotalPlayTimeInSeconds = 0.f;
+    bool canBunnyMove;
+    bool collitionFlag;
     //------------------------------------------------------------------------
 };

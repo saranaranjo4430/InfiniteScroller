@@ -29,6 +29,9 @@ void MyGame::Init(int width, int height)
 
     float speed = 1.0f / 15.0f;
 
+    canBunnyMove = true;
+    collitionFlag = false; 
+
     //Background 
     backgroundSprite1 = new CGameSprite(".\\TestData\\Backgroundmasgrande.bmp", 1, 1);
     backgroundSprite1->CreateAnimation(FALL, speed, { 0 });
@@ -73,6 +76,7 @@ void MyGame::Init(int width, int height)
     //green laser
     
     greenlaser1Sprite->position = Vector2D( -10.f, -10.f);
+    greenlaser1Sprite->SetCollision(CollisionType::CIRCLE, Vector2D(0.75f, 1.f));
     greenlaser1Sprite->CreateAnimation(FALL, speed, { 0 });
     greenlaser1Sprite->SetAnimation(FALL);
     //blue laser
@@ -108,6 +112,8 @@ void MyGame::Init(int width, int height)
     bunnySprite->scale = Vector2D(1.f, 1.f);
     
     bunnySprite->SetCollision(CollisionType::CIRCLE, Vector2D(0.75f, 1.f));
+    
+
 
     bunnySprite->CreateAnimation(ANIM_BACKWARDS, speed, { 18,19,20,21,22,23,24,25,26 });
     bunnySprite->CreateAnimation(ANIM_LEFT, speed, { 9,10,11,12,13,14,15,16,17 });
@@ -131,8 +137,215 @@ void MyGame::Init(int width, int height)
     bunnySprite->AddFlag(DRAW_COLLISION);
 #endif
 }
-
+//___________________________________________________________________________________________________________________________________________
 void MyGame::Update(float _deltaTime)
+{
+    gameVp.Update(_deltaTime);
+    m_TotalPlayTimeInSeconds += _deltaTime / 1000.f;
+    canBunnyMove = true;
+
+    const CController* pController = Utils::GetFirstActiveController();
+    if (pController && pController->CheckButton(APP_PAD_EMUL_BUTTON_ALT_A, true))
+    {
+        Restart();
+        return; // Arrêtez l'exécution de la suite de la méthode Update après le redémarrage
+    }
+
+    float HSpeed = 0.01f;
+    float VSpeed = HSpeed * gameVp.GetRatio();
+
+    
+    // Mise à jour de l'arrière-plan et des lasers
+    UpdateBackground(_deltaTime, VSpeed);
+    UpdateLasers(_deltaTime, VSpeed);
+    // Gestion de la difficulté basée sur le temps total de jeu
+    HandleDifficulty();
+
+    // Mise à jour de bunnySprite
+    if (canBunnyMove)
+    {
+        UpdateBunnySprite(_deltaTime, pController, HSpeed, VSpeed);
+    }
+
+    // Gérer la collision
+    if (bunnySprite->Overlap(greenlaser1Sprite))
+    {
+        canBunnyMove = false;
+        App::Print(gameVp.GetX(0.5f), gameVp.GetY(0.5f), "Collision Detected", 1, 0, 0, GLUT_BITMAP_TIMES_ROMAN_24);
+    }
+}
+
+void MyGame::HandleDifficulty()
+{
+    float thresholdPositionY = -10.f; // Position Y pour désactiver les lasers
+
+    if (m_TotalPlayTimeInSeconds <= 30.f)
+    {
+        bluelaser1Sprite->position.y = thresholdPositionY;
+        darkbluelaser1Sprite->position.y = thresholdPositionY;
+        purplelaser1Sprite->position.y = thresholdPositionY;
+        redlaser1Sprite->position.y = thresholdPositionY;
+        yellowlaser1Sprite->position.y = thresholdPositionY;
+    }
+    else if (m_TotalPlayTimeInSeconds <= 60.f)
+    {
+        darkbluelaser1Sprite->position.y = -10.f;
+        purplelaser1Sprite->position.y = -10.f;
+        redlaser1Sprite->position.y = -10.f;
+        yellowlaser1Sprite->position.y = -10.f;
+    }
+    else if (m_TotalPlayTimeInSeconds <= 90.f)
+    {
+        purplelaser1Sprite->position.y = -10.f;
+        redlaser1Sprite->position.y = -10.f;
+        yellowlaser1Sprite->position.y = -10.f;
+    }
+    else if (m_TotalPlayTimeInSeconds <= 120.f)
+    {
+        redlaser1Sprite->position.y = -10.f;
+        yellowlaser1Sprite->position.y = -10.f;
+    }
+    else if (m_TotalPlayTimeInSeconds <= 150.f)
+    {
+        yellowlaser1Sprite->position.y = -10.f;
+    }
+}
+void MyGame::UpdateBackground(float _deltaTime, float VSpeed)
+{
+    backgroundSprite1->SetAnimation(FALL);
+    backgroundSprite2->SetAnimation(FALL);
+
+    backgroundSprite1->Update(_deltaTime);
+    backgroundSprite2->Update(_deltaTime);
+
+    backgroundSprite1->position.y -= VSpeed;
+    backgroundSprite2->position.y -= VSpeed;
+
+    if (backgroundSprite1->position.y <= -0.47f)
+    {
+        backgroundSprite1->position.y = 1.49f;
+    }
+    if (backgroundSprite2->position.y <= -0.47f)
+    {
+        backgroundSprite2->position.y = 1.49f;
+    }
+}
+
+void MyGame::UpdateLasers(float _deltaTime, float VSpeed)
+{
+    // Mettez ici la logique de mise à jour pour vos lasers
+    // Exemple :
+    greenlaser1Sprite->Update(_deltaTime);
+    bluelaser1Sprite->Update(_deltaTime);
+    darkbluelaser1Sprite->Update(_deltaTime);
+    purplelaser1Sprite->Update(_deltaTime);
+    redlaser1Sprite->Update(_deltaTime);
+    yellowlaser1Sprite->Update(_deltaTime);
+    // ...mise à jour des autres lasers...
+    greenlaser1Sprite->position.y -= VSpeed;
+    bluelaser1Sprite->position.y -= VSpeed;
+    darkbluelaser1Sprite->position.y -= VSpeed;
+    purplelaser1Sprite->position.y -= VSpeed;
+    redlaser1Sprite->position.y -= VSpeed;
+    yellowlaser1Sprite->position.y -= VSpeed;
+
+    if (greenlaser1Sprite->position.y <= -0.07f)
+    {
+        greenlaser1Sprite->position.x = Utils::Random(0.3f, 0.7f);
+        greenlaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    if (bluelaser1Sprite->position.y <= -0.07f)
+    {
+        bluelaser1Sprite->position.x = Utils::Random(0.3f, 0.7f);
+        bluelaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    if (darkbluelaser1Sprite->position.y <= -0.07f)
+    {
+        darkbluelaser1Sprite->position.x = Utils::Random(0.3f, 0.7f);
+        darkbluelaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    if (purplelaser1Sprite->position.y <= -0.07f)
+    {
+        purplelaser1Sprite->position.x = Utils::Random(0.3f, 0.7f);
+        purplelaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    if (redlaser1Sprite->position.y <= -0.07f)
+    {
+        redlaser1Sprite->position.x = Utils::Random(0.3f, 0.7f);
+        redlaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    if (yellowlaser1Sprite->position.y <= -0.07f)
+    {
+        yellowlaser1Sprite->position.x = Utils::Random(0.3f, 0.7f);
+        yellowlaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+}
+
+void MyGame::UpdateBunnySprite(float _deltaTime, const CController* pController, float HSpeed, float VSpeed)
+{
+    //if (!pController) return;
+    if (pController)
+    {
+        // Logique de mouvement de bunnySprite
+        if ((pController->GetLeftThumbStickX() > 0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
+        {
+            bunnySprite->SetAnimation(ANIM_RIGHT);
+            bunnySprite->position.x += HSpeed;
+        }
+        if ((pController->GetLeftThumbStickX() < -0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
+        {
+            bunnySprite->SetAnimation(ANIM_LEFT);
+            bunnySprite->position.x -= HSpeed;
+        }
+        if ((pController->GetLeftThumbStickY() > 0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
+        {
+            bunnySprite->SetAnimation(ANIM_FORWARDS);
+            bunnySprite->position.y += VSpeed;
+        }
+        if ((pController->GetLeftThumbStickY() < -0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
+        {
+            bunnySprite->SetAnimation(ANIM_BACKWARDS);
+            bunnySprite->position.y -= VSpeed;
+        }
+        if (pController->CheckButton(XINPUT_GAMEPAD_LEFT_SHOULDER, false))
+        {
+            bunnySprite->scale.x += HSpeed;
+        }
+        if (pController->CheckButton(XINPUT_GAMEPAD_RIGHT_SHOULDER, false))
+        {
+            bunnySprite->scale.x -= VSpeed;
+        }
+    }
+    
+    // ...ajouter d'autres conditions de mouvement ici...
+
+    // Gérer les limites du bunnySprite
+    ManageBunnyBounds();
+}
+
+void MyGame::ManageBunnyBounds()
+{
+    if (bunnySprite->position.x <= 0.3f) {
+        bunnySprite->position.x = 0.3f;
+    }
+    else if (bunnySprite->position.x >= 0.7f) {
+        bunnySprite->position.x = 0.7f;
+    }
+    if (bunnySprite->position.y >= 1.f) {
+        bunnySprite->position.y = 1.f;
+    }
+    else if (bunnySprite->position.y <= 0.f) {
+        bunnySprite->position.y = 0.f;
+    }
+}
+
+//______________________________________________________________________________________________________________________________________
+/*void MyGame::Update(float _deltaTime)
 {
     gameVp.Update(_deltaTime);
 
@@ -164,17 +377,12 @@ void MyGame::Update(float _deltaTime)
     {
         backgroundSprite1->position.y = 1.49f;//backgroundHeight;
     }
-
     // Reset the position of the second background image if it scrolls out of view
     if (backgroundSprite2->position.y <= -0.47f) //backgroundHeight)
     {
         backgroundSprite2->position.y = 1.49f; // backgroundHeight;
     }
 
-    /*if (backgroundSprite3->position.y <= -backgroundHeight)
-    {
-        backgroundSprite3->position.y = backgroundHeight;
-    }*/
     
     //update lasers
     greenlaser1Sprite->Update(_deltaTime);
@@ -199,7 +407,7 @@ void MyGame::Update(float _deltaTime)
     //backgroundSprite1->position = Vector2D(0.5f, 1.5f);
     //}
     */
-
+/*
     greenlaser1Sprite->position.y -= VSpeed;
     bluelaser1Sprite->position.y -= VSpeed;
     darkbluelaser1Sprite->position.y -= VSpeed;
@@ -209,37 +417,37 @@ void MyGame::Update(float _deltaTime)
 
     if (greenlaser1Sprite->position.y <= -0.07f)
     {
-        greenlaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        greenlaser1Sprite->position.x = Utils::Random(0.3f, 0.7f);
         greenlaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
     }
 
     if (bluelaser1Sprite->position.y <= -0.07f)
     {
-        bluelaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        bluelaser1Sprite->position.x = Utils::Random(0.3f, 0.7f);
         bluelaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
     }
 
     if (darkbluelaser1Sprite->position.y <= -0.07f)
     {
-        darkbluelaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        darkbluelaser1Sprite->position.x = Utils::Random(0.3f, 0.7f);
         darkbluelaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
     }
 
     if (purplelaser1Sprite->position.y <= -0.07f)
     {
-        purplelaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        purplelaser1Sprite->position.x = Utils::Random(0.3f, 0.7f);
         purplelaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
     }
 
     if (redlaser1Sprite->position.y <= -0.07f)
     {
-        redlaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        redlaser1Sprite->position.x = Utils::Random(0.3f, 0.7f);
         redlaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
     }
 
     if (yellowlaser1Sprite->position.y <= -0.07f)
     {
-        yellowlaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        yellowlaser1Sprite->position.x = Utils::Random(0.3f, 0.7f);
         yellowlaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
     }
 
@@ -275,70 +483,124 @@ void MyGame::Update(float _deltaTime)
         yellowlaser1Sprite->position.y = -10.f;
     }
         
-    //------------------------------------------------------------------------
+    //------------------------------
     // Example Sprite Code....
+    
     bunnySprite->Update(_deltaTime);
-
     const CController* pController = Utils::GetFirstActiveController();
-    if (pController)
-    {
-        if ((pController->GetLeftThumbStickX() > 0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
-        {
-            bunnySprite->SetAnimation(ANIM_RIGHT);
-            bunnySprite->position.x += HSpeed;
-        }
-        if ((pController->GetLeftThumbStickX() < -0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
-        {
-            bunnySprite->SetAnimation(ANIM_LEFT);
-            bunnySprite->position.x -= HSpeed;
-        }
-        if ((pController->GetLeftThumbStickY() > 0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
-        {
-            bunnySprite->SetAnimation(ANIM_FORWARDS);
-            bunnySprite->position.y += VSpeed;
-        }
-        if ((pController->GetLeftThumbStickY() < -0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
-        {
-            bunnySprite->SetAnimation(ANIM_BACKWARDS);
-            bunnySprite->position.y -= VSpeed;
-        }
-        if (pController->CheckButton(XINPUT_GAMEPAD_LEFT_SHOULDER, false))
-        {
-            bunnySprite->scale.x += HSpeed;
-        }
-        if (pController->CheckButton(XINPUT_GAMEPAD_RIGHT_SHOULDER, false))
-        {
-            bunnySprite->scale.x -= VSpeed;
-        }
-        /*
-        if (pController->GetLeftTrigger())
-        {
-            bunnySprite->angle += 0.1f * pController->GetLeftTrigger();
-        }
-        if (pController->GetRightTrigger())
-        {
-            bunnySprite->angle -= 0.1f * pController->GetRightTrigger();
-        }
-        */
 
-        if (pController->CheckButton(XINPUT_GAMEPAD_A, true))
+    if (canBunnyMove) {
+        
+        if (pController)
         {
-            Restart();
+            if ((pController->GetLeftThumbStickX() > 0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
+            {
+                bunnySprite->SetAnimation(ANIM_RIGHT);
+                bunnySprite->position.x += HSpeed;
+            }
+            if ((pController->GetLeftThumbStickX() < -0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
+            {
+                bunnySprite->SetAnimation(ANIM_LEFT);
+                bunnySprite->position.x -= HSpeed;
+            }
+            if ((pController->GetLeftThumbStickY() > 0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
+            {
+                bunnySprite->SetAnimation(ANIM_FORWARDS);
+                bunnySprite->position.y += VSpeed;
+            }
+            if ((pController->GetLeftThumbStickY() < -0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
+            {
+                bunnySprite->SetAnimation(ANIM_BACKWARDS);
+                bunnySprite->position.y -= VSpeed;
+            }
+            if (pController->CheckButton(XINPUT_GAMEPAD_LEFT_SHOULDER, false))
+            {
+                bunnySprite->scale.x += HSpeed;
+            }
+            if (pController->CheckButton(XINPUT_GAMEPAD_RIGHT_SHOULDER, false))
+            {
+                bunnySprite->scale.x -= VSpeed;
+            }
+            /*
+            if (pController->GetLeftTrigger())
+            {
+                bunnySprite->angle += 0.1f * pController->GetLeftTrigger();
+            }
+            if (pController->GetRightTrigger())
+            {
+                bunnySprite->angle -= 0.1f * pController->GetRightTrigger();
+            }
+            */
+/*
+            if (pController->CheckButton(APP_PAD_EMUL_BUTTON_ALT_A, true))
+            {
+                
+                Restart();
+            }
+
+            // Borders bunny 
+            if (bunnySprite->position.x <= 0.3f) {
+                bunnySprite->position.x = 0.3f;
+            }
+            else if (bunnySprite->position.x >= 0.7f) {
+                bunnySprite->position.x = 0.7f;
+            }
+            if (bunnySprite->position.y >= 1.f) {
+                bunnySprite->position.y = 1.f;
+            }
+            else if (bunnySprite->position.y <= 0.f) {
+                bunnySprite->position.y = 0.f;
+            }
+
+
+            //Collisions
+            if (bunnySprite->Overlap(greenlaser1Sprite))
+            {
+                collitionFlag = true;
+                canBunnyMove = false;
+                App::Print(gameVp.GetX(0.5f), gameVp.GetY(0.5f), "Sara", 1, 0, 0, GLUT_BITMAP_TIMES_ROMAN_24);
+
+                /*bunnySprite->position.x = bunnySprite->position.x;
+                bunnySprite->position.y = bunnySprite->position.y;
+                backgroundSprite1->position.x = backgroundSprite1->position.x;
+                backgroundSprite1->position.y = backgroundSprite1->position.y;
+                backgroundSprite2->position.x = backgroundSprite2->position.x;
+                backgroundSprite2->position.y = backgroundSprite2->position.y;
+                */
+                //const CController* dController = Utils::GetFirstActiveController();
+                /*
+                if (collitionFlag == true)
+                {
+                    bunnySprite->position.y = 1.f;
+
+                    if (pController->CheckButton(APP_PAD_EMUL_BUTTON_ALT_A, true))
+                    {
+                        Restart();
+
+                        
+                    }
+                }
+            }
+                                
+                          
+            
+            
         }
+        else
+        {
+            bunnySprite->SetAnimation(-1);
+        }
+
     }
-    else
-    {
-        bunnySprite->SetAnimation(-1);
-    }
+    
     //------------------------------------------------------------------------
 
-    //Collisions
-    if (bunnySprite->Overlap(greenlaser1Sprite))
-    {
-
-    }
+    
 }
 
+*/
+
+//_________________________________________________________________________________________________________________________________________________________
 void MyGame::Render()
 {
     gameVp.Render();
@@ -414,6 +676,8 @@ void MyGame::Shutdown()
 
 void MyGame::Restart()
 {
+    canBunnyMove = true;
+    collitionFlag = false;
     bunnySprite->position = Vector2D(0.5f, 0.25f);
     bunnySprite->scale = Vector2D(1.f, 1.f);
 
