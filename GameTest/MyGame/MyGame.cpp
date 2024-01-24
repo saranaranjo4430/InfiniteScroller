@@ -363,31 +363,11 @@ void MyGame::Render()
     //------------------------------------------------------------------------
     // Example Text.
     //------------------------------------------------------------------------
-    float x = gameVp.GetX(0.5f);
-    float y = gameVp.GetY(0.5f);
-    App::Print(x, y, "Sample Text", 1,0,0, GLUT_BITMAP_TIMES_ROMAN_24);
+    App::Print(gameVp.GetX(0.5f), gameVp.GetY(0.5f), "Sample Text", 1,0,0, GLUT_BITMAP_TIMES_ROMAN_24);
 
-    /*
-    //------------------------------------------------------------------------
-    // Example Line Drawing.
-    //------------------------------------------------------------------------
-    static float a = 0.0f;
-    float r = 1.0f;
-    float g = 1.0f;
-    float b = 1.0f;
-    a += 0.1f;
-    for (int i = 0; i < 20; i++)
-    {
-
-        float sx = 200 + sinf(a + i * 0.1f) * 60.0f;
-        float sy = 200 + cosf(a + i * 0.1f) * 60.0f;
-        float ex = 700 - sinf(a + i * 0.1f) * 60.0f;
-        float ey = 700 - cosf(a + i * 0.1f) * 60.0f;
-        g = (float)i / 20.0f;
-        b = (float)i / 20.0f;
-        App::DrawLine(sx, sy, ex, ey, r, g, b);
-    }
-    */
+    char textBuffer[64];
+    sprintf(textBuffer, "PlayTime: %.0fs", m_TotalPlayTimeInSeconds);
+    App::Print(gameVp.GetX(0.5f), gameVp.GetX(0.95f), textBuffer, 0.0f, 0.0f, 1.0f, GLUT_BITMAP_HELVETICA_10);
 
     //To be called last
     gameVp.RenderBorders();
