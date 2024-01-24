@@ -18,7 +18,7 @@ public:
     void Update(float _deltaTime);
     void Render();
     void Shutdown();
-
+    void Restart();
 
 private:
     //------------------------------------------------------------------------
@@ -65,5 +65,7 @@ private:
         ANIM_RIGHT,
         FALL,
     };
+
+    float m_TotalPlayTimeInSeconds = 0.f;
     //------------------------------------------------------------------------
 };

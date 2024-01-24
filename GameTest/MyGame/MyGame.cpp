@@ -39,6 +39,7 @@ void MyGame::Init(int width, int height)
     
     // 
     //position background init
+    backgroundSprite1->position = Vector2D(0.5f, 0.5f);
     backgroundSprite2->position = Vector2D(0.5f, 1.47f);
     //backgroundSprite3->position = Vector2D(0.5f, 2.5f);
 
@@ -71,28 +72,34 @@ void MyGame::Init(int width, int height)
     
     //green laser
     
-    greenlaser1Sprite->position = Vector2D( 0.1f, 1.f);
+    greenlaser1Sprite->position = Vector2D( -10.f, -10.f);
     greenlaser1Sprite->CreateAnimation(FALL, speed, { 0 });
+    greenlaser1Sprite->SetAnimation(FALL);
     //blue laser
     
-    bluelaser1Sprite->position = Vector2D(0.2f, 1.f);
+    bluelaser1Sprite->position = Vector2D(-10.f, -10.f);
     bluelaser1Sprite->CreateAnimation(FALL, speed, { 0 });
+    bluelaser1Sprite->SetAnimation(FALL);
     //dark blue  laser
     
-    darkbluelaser1Sprite->position = Vector2D(0.3f, 1.f);
+    darkbluelaser1Sprite->position = Vector2D(-10.f, -10.f);
     darkbluelaser1Sprite->CreateAnimation(FALL, speed, { 0 });
+    darkbluelaser1Sprite->SetAnimation(FALL);
     //purple laser
     
-    purplelaser1Sprite->position = Vector2D(0.4f, 1.f);
+    purplelaser1Sprite->position = Vector2D(-10.f, -10.f);
     purplelaser1Sprite->CreateAnimation(FALL, speed, { 0 });
+    purplelaser1Sprite->SetAnimation(FALL);
     //red laser
     
-    redlaser1Sprite->position = Vector2D(0.5f, 1.f);
+    redlaser1Sprite->position = Vector2D(-10.f, -10.f);
     redlaser1Sprite->CreateAnimation(FALL, speed, { 0 });
+    redlaser1Sprite->SetAnimation(FALL);
     //yellow laser
     
-    yellowlaser1Sprite->position = Vector2D(0.6f, 1.f);
+    yellowlaser1Sprite->position = Vector2D(-10.f, -10.f);
     yellowlaser1Sprite->CreateAnimation(FALL, speed, { 0 });
+    yellowlaser1Sprite->SetAnimation(FALL);
     
     //------------------------------------------------------------------------
     // Example Sprite Code....
@@ -100,23 +107,36 @@ void MyGame::Init(int width, int height)
     bunnySprite->position = Vector2D(0.5f, 0.25f);
     bunnySprite->scale = Vector2D(1.f, 1.f);
     
+    bunnySprite->SetCollision(CollisionType::CIRCLE, Vector2D(0.75f, 1.f));
+
     bunnySprite->CreateAnimation(ANIM_BACKWARDS, speed, { 18,19,20,21,22,23,24,25,26 });
     bunnySprite->CreateAnimation(ANIM_LEFT, speed, { 9,10,11,12,13,14,15,16,17 });
     bunnySprite->CreateAnimation(ANIM_RIGHT, speed, { 27,28,29,30,31,32,33,34,35 });
     bunnySprite->CreateAnimation(ANIM_FORWARDS, speed, { 0,1,2,3,4,5,6,7,8 });
 
-
-    App::LoadSound(".\\TestData\\Test.wav");
-
     App::LoadSound(".\\TestData\\music.wav");
     App::PlaySound(".\\TestData\\music.wav", true);
     App::SetVolume(".\\TestData\\music.wav", 0.75f);
     //------------------------------------------------------------------------
+
+#ifdef _DEBUG
+    //Collisions
+    greenlaser1Sprite->AddFlag(DRAW_COLLISION);
+    bluelaser1Sprite->AddFlag(DRAW_COLLISION);
+    darkbluelaser1Sprite->AddFlag(DRAW_COLLISION);
+    purplelaser1Sprite->AddFlag(DRAW_COLLISION);
+    redlaser1Sprite->AddFlag(DRAW_COLLISION);
+    yellowlaser1Sprite->AddFlag(DRAW_COLLISION);
+
+    bunnySprite->AddFlag(DRAW_COLLISION);
+#endif
 }
 
 void MyGame::Update(float _deltaTime)
 {
     gameVp.Update(_deltaTime);
+
+    m_TotalPlayTimeInSeconds += _deltaTime / 1000.f;
     
     float HSpeed = 0.01f;
     float VSpeed = HSpeed * gameVp.GetRatio();
@@ -127,7 +147,6 @@ void MyGame::Update(float _deltaTime)
 
 
     //Background
-
     backgroundSprite1->SetAnimation(FALL);
     backgroundSprite2->SetAnimation(FALL);
     //backgroundSprite3->SetAnimation(FALL);
@@ -181,20 +200,81 @@ void MyGame::Update(float _deltaTime)
     //}
     */
 
-    greenlaser1Sprite->SetAnimation(FALL);
     greenlaser1Sprite->position.y -= VSpeed;
-    bluelaser1Sprite->SetAnimation(FALL);
     bluelaser1Sprite->position.y -= VSpeed;
-    darkbluelaser1Sprite->SetAnimation(FALL);
     darkbluelaser1Sprite->position.y -= VSpeed;
-    purplelaser1Sprite->SetAnimation(FALL);
     purplelaser1Sprite->position.y -= VSpeed;
-    redlaser1Sprite->SetAnimation(FALL);
     redlaser1Sprite->position.y -= VSpeed;
-    yellowlaser1Sprite->SetAnimation(FALL);
     yellowlaser1Sprite->position.y -= VSpeed;
-    
-    
+
+    if (greenlaser1Sprite->position.y <= -0.07f)
+    {
+        greenlaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        greenlaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    if (bluelaser1Sprite->position.y <= -0.07f)
+    {
+        bluelaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        bluelaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    if (darkbluelaser1Sprite->position.y <= -0.07f)
+    {
+        darkbluelaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        darkbluelaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    if (purplelaser1Sprite->position.y <= -0.07f)
+    {
+        purplelaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        purplelaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    if (redlaser1Sprite->position.y <= -0.07f)
+    {
+        redlaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        redlaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    if (yellowlaser1Sprite->position.y <= -0.07f)
+    {
+        yellowlaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        yellowlaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    // Difficulty handling
+    if (m_TotalPlayTimeInSeconds <= 30.f)
+    {
+        bluelaser1Sprite->position.y = -10.f;
+        darkbluelaser1Sprite->position.y = -10.f;
+        purplelaser1Sprite->position.y = -10.f;
+        redlaser1Sprite->position.y = -10.f;
+        yellowlaser1Sprite->position.y = -10.f;
+    }
+    else if (m_TotalPlayTimeInSeconds <= 60.f)
+    {
+        darkbluelaser1Sprite->position.y = -10.f;
+        purplelaser1Sprite->position.y = -10.f;
+        redlaser1Sprite->position.y = -10.f;
+        yellowlaser1Sprite->position.y = -10.f;
+    }
+    else if (m_TotalPlayTimeInSeconds <= 90.f)
+    {
+        purplelaser1Sprite->position.y = -10.f;
+        redlaser1Sprite->position.y = -10.f;
+        yellowlaser1Sprite->position.y = -10.f;
+    }
+    else if (m_TotalPlayTimeInSeconds <= 120.f)
+    {
+        redlaser1Sprite->position.y = -10.f;
+        yellowlaser1Sprite->position.y = -10.f;
+    }
+    else if (m_TotalPlayTimeInSeconds <= 150.f)
+    {
+        yellowlaser1Sprite->position.y = -10.f;
+    }
+        
     //------------------------------------------------------------------------
     // Example Sprite Code....
     bunnySprite->Update(_deltaTime);
@@ -230,6 +310,7 @@ void MyGame::Update(float _deltaTime)
         {
             bunnySprite->scale.x -= VSpeed;
         }
+        /*
         if (pController->GetLeftTrigger())
         {
             bunnySprite->angle += 0.1f * pController->GetLeftTrigger();
@@ -238,13 +319,11 @@ void MyGame::Update(float _deltaTime)
         {
             bunnySprite->angle -= 0.1f * pController->GetRightTrigger();
         }
+        */
 
-        //------------------------------------------------------------------------
-        // Sample Sound.
-        //------------------------------------------------------------------------
-        if (pController->CheckButton(XINPUT_GAMEPAD_B, true))
+        if (pController->CheckButton(XINPUT_GAMEPAD_A, true))
         {
-            App::PlaySound(".\\TestData\\Test.wav");
+            Restart();
         }
     }
     else
@@ -252,6 +331,12 @@ void MyGame::Update(float _deltaTime)
         bunnySprite->SetAnimation(-1);
     }
     //------------------------------------------------------------------------
+
+    //Collisions
+    if (bunnySprite->Overlap(greenlaser1Sprite))
+    {
+
+    }
 }
 
 void MyGame::Render()
@@ -262,9 +347,7 @@ void MyGame::Render()
     //backgroundSprite3->Render();
     backgroundSprite1->Render();
     backgroundSprite2->Render();
-
-
-    //lasers 
+        
     greenlaser1Sprite->Render();
     bluelaser1Sprite->Render();
     darkbluelaser1Sprite->Render();
@@ -277,12 +360,14 @@ void MyGame::Render()
     bunnySprite->Render();
     //------------------------------------------------------------------------
 
-    /*
     //------------------------------------------------------------------------
     // Example Text.
     //------------------------------------------------------------------------
-    App::Print(100, 100, "Sample Text");
+    float x = gameVp.GetX(0.5f);
+    float y = gameVp.GetY(0.5f);
+    App::Print(x, y, "Sample Text", 1,0,0, GLUT_BITMAP_TIMES_ROMAN_24);
 
+    /*
     //------------------------------------------------------------------------
     // Example Line Drawing.
     //------------------------------------------------------------------------
@@ -315,8 +400,6 @@ void MyGame::Shutdown()
     delete backgroundSprite1;
     delete backgroundSprite2;
     
-
-
     //Laser
     delete greenlaser1Sprite;
     delete bluelaser1Sprite;
@@ -324,15 +407,45 @@ void MyGame::Shutdown()
     delete purplelaser1Sprite;
     delete redlaser1Sprite;
     delete yellowlaser1Sprite;
+
+    delete greenlaser2Sprite;
+    delete bluelaser2Sprite;
+    delete darkbluelaser2Sprite;
+    delete purplelaser2Sprite;
+    delete redlaser2Sprite;
+    delete yellowlaser2Sprite;
+
+    delete greenlaser3Sprite;
+    delete bluelaser3Sprite;
+    delete darkbluelaser3Sprite;
+    delete purplelaser3Sprite;
+    delete redlaser3Sprite;
+    delete yellowlaser3Sprite;
     
     //------------------------------------------------------------------------
     // Example Sprite Code....
     delete bunnySprite;
     //------------------------------------------------------------------------
 
-    App::ReleaseSound(".\\TestData\\Test.wav");
     App::ReleaseSound(".\\TestData\\music.wav");
 
     gameVp.Shutdown();
 }
+
+void MyGame::Restart()
+{
+    bunnySprite->position = Vector2D(0.5f, 0.25f);
+    bunnySprite->scale = Vector2D(1.f, 1.f);
+
+    backgroundSprite1->position = Vector2D(0.5f, 0.5f);
+    backgroundSprite2->position = Vector2D(0.5f, 1.47f);
+
+    greenlaser1Sprite->position = Vector2D(-10.f, -10.f);
+    bluelaser1Sprite->position = Vector2D(-10.f, -10.f);
+    darkbluelaser1Sprite->position = Vector2D(-10.f, -10.f);
+    purplelaser1Sprite->position = Vector2D(-10.f, -10.f);
+    redlaser1Sprite->position = Vector2D(-10.f, -10.f);
+    yellowlaser1Sprite->position = Vector2D(-10.f, -10.f);
+}
+
 
