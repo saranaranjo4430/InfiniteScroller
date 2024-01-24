@@ -57,7 +57,7 @@ void Vector2D::Rotate(float _degrees)
 float Vector2D::Dot(const Vector2D& _other) const
 {
     float dot = x * _other.x + y * _other.y;
-    dot = Utils::Clampf(dot, -1.f, 1.f);
+    dot = Utils::Clamp(dot, -1.f, 1.f);
     return dot;
 }
 
