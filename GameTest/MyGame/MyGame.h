@@ -1,7 +1,10 @@
 #pragma once
 
+#include "..\app\SimpleSprite.h"
+#include "..\app\SimpleSound.h"
+
 #include "Utils\GameViewport.h"
-#include "Utils\Vectors.h"
+#include <string>
 
 class CGameSprite;
 
@@ -15,14 +18,19 @@ public:
     void Update(float _deltaTime);
     void Render();
     void Shutdown();
+    void Restart();
 
 private:
     //------------------------------------------------------------------------
+  
     // Example Sprite Code....
-    CGameSprite* testSprite;
+    CGameSprite* bunnySprite;
 
     //background
-    CGameSprite* backgroundSprite;
+    CGameSprite* backgroundSprite1;
+    CGameSprite* backgroundSprite2;
+    CGameSprite* backgroundSprite3;
+
 
     //lasers 1
     CGameSprite* greenlaser1Sprite;
@@ -47,6 +55,7 @@ private:
     CGameSprite* purplelaser3Sprite;
     CGameSprite* redlaser3Sprite;
     CGameSprite* yellowlaser3Sprite;
+    
 
     enum
     {
@@ -56,22 +65,7 @@ private:
         ANIM_RIGHT,
         FALL,
     };
-    //------------------------------------------------------------------------
 
-    //------------------------------------------------------------------------
-    // Example Vectors....
-    Square2D m_RotatingRect;
-    Rect2D m_MovingRect;
-    Circle2D m_MovingCircle;
-    Circle2D m_StaticCircle;
-    //------------------------------------------------------------------------
-
-    //------------------------------------------------------------------------
-    // Example Controls....
-    int m_MoveState = 0;
-
-    void MoveRect(float _deltaTime, const CController* _controller);
-    void MoveCircle(float _deltaTime, const CController* _controller);
-    void MoveSprite(float _deltaTime, const CController* _controller);
+    float m_TotalPlayTimeInSeconds = 0.f;
     //------------------------------------------------------------------------
 };

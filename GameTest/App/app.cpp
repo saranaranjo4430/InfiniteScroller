@@ -74,6 +74,10 @@ namespace App
     {
         CSimpleSound::GetInstance().ReleaseSound(fileName);
     }
+	void SetVolume(const char* fileName, float volume)
+	{
+		CSimpleSound::GetInstance().SetVolume(fileName, volume);
+	}
 	// This prints a string to the screen
 	void Print(float x, float y, const char *st, float r, float g, float b, void *font)
 	{

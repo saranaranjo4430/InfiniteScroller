@@ -1,15 +1,20 @@
 //------------------------------------------------------------------------
-#include "stdafx.h"
+#include <stdafx.h>
+
 
 #include "..\app\app.h"
 
 #include "Utils\Utils.h"
 #include "Utils\GameSprite.h"
+#include "Utils\GameViewport.h"
+#include "Utils\Vectors.h"
 
 #include "MyGame.h"
 //------------------------------------------------------------------------
 
-MyGame::MyGame()
+
+
+MyGame::MyGame() 
 {
 }
 
@@ -20,12 +25,23 @@ MyGame::~MyGame()
 void MyGame::Init(int width, int height)
 {
     gameVp.Init(width, height);
-    //gameVp.AddFlag(ViewportFlags::DRAW_VIEWPORT);
-    //gameVp.AddFlag(ViewportFlags::DRAW_BORDERS);
+    gameVp.AddFlag(DRAW_VIEWPORT);
+
     float speed = 1.0f / 15.0f;
 
     //Background 
-    backgroundSprite = new CGameSprite(".\\TestData\\Background3.bmp", 1, 1);
+    backgroundSprite1 = new CGameSprite(".\\TestData\\Backgroundmasgrande.bmp", 1, 1);
+    backgroundSprite1->CreateAnimation(FALL, speed, { 0 });
+    backgroundSprite2 = new CGameSprite(".\\TestData\\Backgroundmasgrande.bmp", 1, 1);
+    backgroundSprite2->CreateAnimation(FALL, speed, { 0 });
+    //backgroundSprite3 = new CGameSprite(".\\TestData\\Background2.bmp", 1, 1);
+    //backgroundSprite3->CreateAnimation(FALL, speed, { 0 });
+    
+    // 
+    //position background init
+    backgroundSprite1->position = Vector2D(0.5f, 0.5f);
+    backgroundSprite2->position = Vector2D(0.5f, 1.47f);
+    //backgroundSprite3->position = Vector2D(0.5f, 2.5f);
 
     //init lasers 1
     greenlaser1Sprite = new CGameSprite(".\\TestData\\green_laser1.bmp", 1, 1);
@@ -50,71 +66,116 @@ void MyGame::Init(int width, int height)
     purplelaser3Sprite = new CGameSprite(".\\TestData\\purple_laser3.bmp", 1, 1);
     redlaser3Sprite = new CGameSprite(".\\TestData\\red_laser3.bmp", 1, 1);
     yellowlaser3Sprite = new CGameSprite(".\\TestData\\yellow_laser3.bmp", 1, 1);
+    
 
     //Init positions of lasers 
-
+    
     //green laser
-
-    greenlaser1Sprite->position = Vector2D(0.1f, 1.f);
+    
+    greenlaser1Sprite->position = Vector2D( -10.f, -10.f);
     greenlaser1Sprite->CreateAnimation(FALL, speed, { 0 });
+    greenlaser1Sprite->SetAnimation(FALL);
     //blue laser
-
-    bluelaser1Sprite->position = Vector2D(0.2f, 1.f);
+    
+    bluelaser1Sprite->position = Vector2D(-10.f, -10.f);
     bluelaser1Sprite->CreateAnimation(FALL, speed, { 0 });
+    bluelaser1Sprite->SetAnimation(FALL);
     //dark blue  laser
-
-    darkbluelaser1Sprite->position = Vector2D(0.3f, 1.f);
+    
+    darkbluelaser1Sprite->position = Vector2D(-10.f, -10.f);
     darkbluelaser1Sprite->CreateAnimation(FALL, speed, { 0 });
+    darkbluelaser1Sprite->SetAnimation(FALL);
     //purple laser
-
-    purplelaser1Sprite->position = Vector2D(0.4f, 1.f);
+    
+    purplelaser1Sprite->position = Vector2D(-10.f, -10.f);
     purplelaser1Sprite->CreateAnimation(FALL, speed, { 0 });
+    purplelaser1Sprite->SetAnimation(FALL);
     //red laser
-
-    redlaser1Sprite->position = Vector2D(0.5f, 1.f);
+    
+    redlaser1Sprite->position = Vector2D(-10.f, -10.f);
     redlaser1Sprite->CreateAnimation(FALL, speed, { 0 });
+    redlaser1Sprite->SetAnimation(FALL);
     //yellow laser
-
-    yellowlaser1Sprite->position = Vector2D(0.6f, 1.f);
+    
+    yellowlaser1Sprite->position = Vector2D(-10.f, -10.f);
     yellowlaser1Sprite->CreateAnimation(FALL, speed, { 0 });
-
+    yellowlaser1Sprite->SetAnimation(FALL);
+    
     //------------------------------------------------------------------------
     // Example Sprite Code....
+    bunnySprite = new CGameSprite(".\\TestData\\conejo.bmp", 9, 4);
+    bunnySprite->position = Vector2D(0.5f, 0.25f);
+    bunnySprite->scale = Vector2D(1.f, 1.f);
+    
+    bunnySprite->SetCollision(CollisionType::CIRCLE, Vector2D(0.75f, 1.f));
+
+    bunnySprite->CreateAnimation(ANIM_BACKWARDS, speed, { 18,19,20,21,22,23,24,25,26 });
+    bunnySprite->CreateAnimation(ANIM_LEFT, speed, { 9,10,11,12,13,14,15,16,17 });
+    bunnySprite->CreateAnimation(ANIM_RIGHT, speed, { 27,28,29,30,31,32,33,34,35 });
+    bunnySprite->CreateAnimation(ANIM_FORWARDS, speed, { 0,1,2,3,4,5,6,7,8 });
+
+    App::LoadSound(".\\TestData\\music.wav");
+    App::PlaySound(".\\TestData\\music.wav", true);
+    App::SetVolume(".\\TestData\\music.wav", 0.75f);
     //------------------------------------------------------------------------
-    testSprite = new CGameSprite(".\\TestData\\Test.bmp", 8, 4);
-    testSprite->position = Vector2D(0.f, 0.f);
-    testSprite->scale = Vector2D(1.f, 1.f);
-    testSprite->SetCollision(CollisionType::BOX, Vector2D(0.5f, 1.f));
-    testSprite->AddFlag(GameSpriteFlags::DRAW_COLLISION);
 
-    testSprite->CreateAnimation(ANIM_BACKWARDS, speed, { 0,1,2,3,4,5,6,7 });
-    testSprite->CreateAnimation(ANIM_LEFT, speed, { 8,9,10,11,12,13,14,15 });
-    testSprite->CreateAnimation(ANIM_RIGHT, speed, { 16,17,18,19,20,21,22,23 });
-    testSprite->CreateAnimation(ANIM_FORWARDS, speed, { 24,25,26,27,28,29,30,31 });
+#ifdef _DEBUG
+    //Collisions
+    greenlaser1Sprite->AddFlag(DRAW_COLLISION);
+    bluelaser1Sprite->AddFlag(DRAW_COLLISION);
+    darkbluelaser1Sprite->AddFlag(DRAW_COLLISION);
+    purplelaser1Sprite->AddFlag(DRAW_COLLISION);
+    redlaser1Sprite->AddFlag(DRAW_COLLISION);
+    yellowlaser1Sprite->AddFlag(DRAW_COLLISION);
 
-    App::LoadSound(".\\TestData\\Test.wav");
-
-    //------------------------------------------------------------------------
-    // Example of vectors....
-    //------------------------------------------------------------------------
-    m_RotatingRect = Square2D(Vector2D(0.5f, 0.75f), 0.5f);
-    m_MovingRect = Rect2D(Vector2D(0.5f, 0.25f), 0.25f, 0.125f * gameVp.GetRatio());
-    m_MovingCircle = Circle2D(Vector2D(0.75f, 0.5f), 0.125f);
-    m_StaticCircle = Circle2D(Vector2D(0.25f, 0.5f), 0.125f);
-
-    m_RotatingRect.Scale(0.5f);
+    bunnySprite->AddFlag(DRAW_COLLISION);
+#endif
 }
 
 void MyGame::Update(float _deltaTime)
 {
     gameVp.Update(_deltaTime);
 
+    m_TotalPlayTimeInSeconds += _deltaTime / 1000.f;
+    
     float HSpeed = 0.01f;
     float VSpeed = HSpeed * gameVp.GetRatio();
+    float speed = 1.0f / 15.0f;
+
+    // Assuming the height of the background image is the same as the viewport height
+    float backgroundHeight = 1.6f; // Replace with the actual height of your background image
+
 
     //Background
-    backgroundSprite->Update(_deltaTime);
+    backgroundSprite1->SetAnimation(FALL);
+    backgroundSprite2->SetAnimation(FALL);
+    //backgroundSprite3->SetAnimation(FALL);
 
+    backgroundSprite1->Update(_deltaTime);
+    backgroundSprite2->Update(_deltaTime);
+    //backgroundSprite3->Update(_deltaTime);
+
+    backgroundSprite1->position.y -= VSpeed;
+    backgroundSprite2->position.y -= VSpeed;
+    //backgroundSprite3->position.y -= VSpeed;
+
+    // Reset the position of the first background image if it scrolls out of view
+    if (backgroundSprite1->position.y <= -0.47f )//backgroundHeight)
+    {
+        backgroundSprite1->position.y = 1.49f;//backgroundHeight;
+    }
+
+    // Reset the position of the second background image if it scrolls out of view
+    if (backgroundSprite2->position.y <= -0.47f) //backgroundHeight)
+    {
+        backgroundSprite2->position.y = 1.49f; // backgroundHeight;
+    }
+
+    /*if (backgroundSprite3->position.y <= -backgroundHeight)
+    {
+        backgroundSprite3->position.y = backgroundHeight;
+    }*/
+    
     //update lasers
     greenlaser1Sprite->Update(_deltaTime);
     bluelaser1Sprite->Update(_deltaTime);
@@ -123,184 +184,158 @@ void MyGame::Update(float _deltaTime)
     redlaser1Sprite->Update(_deltaTime);
     yellowlaser1Sprite->Update(_deltaTime);
 
+    /*
     //lasers FALL
-    greenlaser1Sprite->SetAnimation(FALL);
+    //while (true) {
+    backgroundSprite1->SetAnimation(FALL);
+    //backgroundSprite1->position.y -= VSpeed;
+
+    //backgroundSprite2->SetPosition(0.5f, 0.9f);
+    backgroundSprite2->SetAnimation(FALL);
+    //backgroundSprite2->position.y -= VSpeed;
+    backgroundSprite1->position = Vector2D(0.5f, 1.5f);
+    backgroundSprite1->CreateAnimation(FALL, speed, { 0 });
+    backgroundSprite1->SetAnimation(FALL);
+    //backgroundSprite1->position = Vector2D(0.5f, 1.5f);
+    //}
+    */
+
     greenlaser1Sprite->position.y -= VSpeed;
-    bluelaser1Sprite->SetAnimation(FALL);
     bluelaser1Sprite->position.y -= VSpeed;
-    darkbluelaser1Sprite->SetAnimation(FALL);
     darkbluelaser1Sprite->position.y -= VSpeed;
-    purplelaser1Sprite->SetAnimation(FALL);
     purplelaser1Sprite->position.y -= VSpeed;
-    redlaser1Sprite->SetAnimation(FALL);
     redlaser1Sprite->position.y -= VSpeed;
-    yellowlaser1Sprite->SetAnimation(FALL);
     yellowlaser1Sprite->position.y -= VSpeed;
 
+    if (greenlaser1Sprite->position.y <= -0.07f)
+    {
+        greenlaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        greenlaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    if (bluelaser1Sprite->position.y <= -0.07f)
+    {
+        bluelaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        bluelaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    if (darkbluelaser1Sprite->position.y <= -0.07f)
+    {
+        darkbluelaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        darkbluelaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    if (purplelaser1Sprite->position.y <= -0.07f)
+    {
+        purplelaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        purplelaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    if (redlaser1Sprite->position.y <= -0.07f)
+    {
+        redlaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        redlaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    if (yellowlaser1Sprite->position.y <= -0.07f)
+    {
+        yellowlaser1Sprite->position.x = Utils::Random(0.25f, 0.75f);
+        yellowlaser1Sprite->position.y = Utils::Random(1.1f, 2.f);
+    }
+
+    // Difficulty handling
+    if (m_TotalPlayTimeInSeconds <= 30.f)
+    {
+        bluelaser1Sprite->position.y = -10.f;
+        darkbluelaser1Sprite->position.y = -10.f;
+        purplelaser1Sprite->position.y = -10.f;
+        redlaser1Sprite->position.y = -10.f;
+        yellowlaser1Sprite->position.y = -10.f;
+    }
+    else if (m_TotalPlayTimeInSeconds <= 60.f)
+    {
+        darkbluelaser1Sprite->position.y = -10.f;
+        purplelaser1Sprite->position.y = -10.f;
+        redlaser1Sprite->position.y = -10.f;
+        yellowlaser1Sprite->position.y = -10.f;
+    }
+    else if (m_TotalPlayTimeInSeconds <= 90.f)
+    {
+        purplelaser1Sprite->position.y = -10.f;
+        redlaser1Sprite->position.y = -10.f;
+        yellowlaser1Sprite->position.y = -10.f;
+    }
+    else if (m_TotalPlayTimeInSeconds <= 120.f)
+    {
+        redlaser1Sprite->position.y = -10.f;
+        yellowlaser1Sprite->position.y = -10.f;
+    }
+    else if (m_TotalPlayTimeInSeconds <= 150.f)
+    {
+        yellowlaser1Sprite->position.y = -10.f;
+    }
+        
     //------------------------------------------------------------------------
     // Example Sprite Code....
-    //------------------------------------------------------------------------
-    testSprite->Update(_deltaTime);
+    bunnySprite->Update(_deltaTime);
 
     const CController* pController = Utils::GetFirstActiveController();
-    if (!pController)
-    {
-        testSprite->SetAnimation(-1);
-    }
-
-    //------------------------------------------------------------------------
-    // Example Vectors....
-    //------------------------------------------------------------------------
-    {
-        float angle = m_RotatingRect.GetRotation();
-        angle += 0.0125f * _deltaTime;
-        m_RotatingRect.Rotate(angle);
-    }
-
-    //------------------------------------------------------------------------
-    // Example Controls....
-    //------------------------------------------------------------------------
     if (pController)
     {
+        if ((pController->GetLeftThumbStickX() > 0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
+        {
+            bunnySprite->SetAnimation(ANIM_RIGHT);
+            bunnySprite->position.x += HSpeed;
+        }
+        if ((pController->GetLeftThumbStickX() < -0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
+        {
+            bunnySprite->SetAnimation(ANIM_LEFT);
+            bunnySprite->position.x -= HSpeed;
+        }
+        if ((pController->GetLeftThumbStickY() > 0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
+        {
+            bunnySprite->SetAnimation(ANIM_FORWARDS);
+            bunnySprite->position.y += VSpeed;
+        }
+        if ((pController->GetLeftThumbStickY() < -0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
+        {
+            bunnySprite->SetAnimation(ANIM_BACKWARDS);
+            bunnySprite->position.y -= VSpeed;
+        }
+        if (pController->CheckButton(XINPUT_GAMEPAD_LEFT_SHOULDER, false))
+        {
+            bunnySprite->scale.x += HSpeed;
+        }
+        if (pController->CheckButton(XINPUT_GAMEPAD_RIGHT_SHOULDER, false))
+        {
+            bunnySprite->scale.x -= VSpeed;
+        }
+        /*
+        if (pController->GetLeftTrigger())
+        {
+            bunnySprite->angle += 0.1f * pController->GetLeftTrigger();
+        }
+        if (pController->GetRightTrigger())
+        {
+            bunnySprite->angle -= 0.1f * pController->GetRightTrigger();
+        }
+        */
+
         if (pController->CheckButton(XINPUT_GAMEPAD_A, true))
         {
-            (m_MoveState >= 2) ? m_MoveState = 0 : m_MoveState++;
-        }
-
-        switch (m_MoveState)
-        {
-        case 0:
-            MoveSprite(_deltaTime, pController);
-            break;
-
-        case 1:
-            MoveRect(_deltaTime, pController);
-            break;
-
-        case 2:
-            MoveCircle(_deltaTime, pController);
-            break;
+            Restart();
         }
     }
-}
+    else
+    {
+        bunnySprite->SetAnimation(-1);
+    }
+    //------------------------------------------------------------------------
 
-void MyGame::MoveRect(float _deltaTime, const CController* _controller)
-{
-    Vector2D center = m_MovingRect.GetCenter();
-    float angle = m_MovingRect.GetRotation();
+    //Collisions
+    if (bunnySprite->Overlap(greenlaser1Sprite))
+    {
 
-    //Position
-    float HSpeed = 0.01f;
-    float VSpeed = HSpeed * gameVp.GetRatio();
-
-    if ((_controller->GetLeftThumbStickX() > 0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
-    {
-        center.x += HSpeed;
-    }
-    if ((_controller->GetLeftThumbStickX() < -0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
-    {
-        center.x -= HSpeed;
-    }
-    if ((_controller->GetLeftThumbStickY() > 0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
-    {
-        center.y += VSpeed;
-    }
-    if ((_controller->GetLeftThumbStickY() < -0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
-    {
-        center.y -= VSpeed;
-    }
-
-    m_MovingRect.Move(center);
-
-    //Rotation
-    float RSpeed = 0.05f * _deltaTime;
-    if (_controller->GetRightThumbStickX() > 0.5f)
-    {
-        angle -= RSpeed;
-    }
-    if (_controller->GetRightThumbStickX() < -0.5f)
-    {
-        angle += RSpeed;
-    }
-
-    m_MovingRect.Rotate(angle);
-}
-
-void MyGame::MoveCircle(float _deltaTime, const CController* _controller)
-{
-    Vector2D center = m_MovingCircle.GetCenter();
-
-    //Position
-    float HSpeed = 0.01f;
-    float VSpeed = HSpeed * gameVp.GetRatio();
-
-    if ((_controller->GetLeftThumbStickX() > 0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
-    {
-        center.x += HSpeed;
-    }
-    if ((_controller->GetLeftThumbStickX() < -0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
-    {
-        center.x -= HSpeed;
-    }
-    if ((_controller->GetLeftThumbStickY() > 0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
-    {
-        center.y += VSpeed;
-    }
-    if ((_controller->GetLeftThumbStickY() < -0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
-    {
-        center.y -= VSpeed;
-    }
-
-    m_MovingCircle.Move(center);
-}
-
-void MyGame::MoveSprite(float _deltaTime, const CController* _controller)
-{
-    float HSpeed = 0.01f;
-    float VSpeed = HSpeed * gameVp.GetRatio();
-
-    if ((_controller->GetLeftThumbStickX() > 0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
-    {
-        testSprite->SetAnimation(ANIM_RIGHT);
-        testSprite->position.x += HSpeed;
-    }
-    if ((_controller->GetLeftThumbStickX() < -0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
-    {
-        testSprite->SetAnimation(ANIM_LEFT);
-        testSprite->position.x -= HSpeed;
-    }
-    if ((_controller->GetLeftThumbStickY() > 0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
-    {
-        testSprite->SetAnimation(ANIM_FORWARDS);
-        testSprite->position.y += VSpeed;
-    }
-    if ((_controller->GetLeftThumbStickY() < -0.5f) || _controller->CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
-    {
-        testSprite->SetAnimation(ANIM_BACKWARDS);
-        testSprite->position.y -= VSpeed;
-    }
-    if (_controller->CheckButton(XINPUT_GAMEPAD_LEFT_SHOULDER, false))
-    {
-        testSprite->scale.x += HSpeed;
-        testSprite->scale.y += HSpeed;
-    }
-    if (_controller->CheckButton(XINPUT_GAMEPAD_RIGHT_SHOULDER, false))
-    {
-        testSprite->scale.x -= VSpeed;
-        testSprite->scale.y -= VSpeed;
-    }
-    if (_controller->GetLeftTrigger())
-    {
-        testSprite->angle += 1.f * _controller->GetLeftTrigger();
-    }
-    if (_controller->GetRightTrigger())
-    {
-        testSprite->angle -= 1.f * _controller->GetRightTrigger();
-    }
-
-    if (_controller->CheckButton(XINPUT_GAMEPAD_B, true))
-    {
-        App::PlaySound(".\\TestData\\Test.wav");
     }
 }
 
@@ -309,24 +344,33 @@ void MyGame::Render()
     gameVp.Render();
 
     //Background
-    backgroundSprite->Render();
-
-    //lasers 
+    //backgroundSprite3->Render();
+    backgroundSprite1->Render();
+    backgroundSprite2->Render();
+        
     greenlaser1Sprite->Render();
     bluelaser1Sprite->Render();
     darkbluelaser1Sprite->Render();
     purplelaser1Sprite->Render();
     redlaser1Sprite->Render();
     yellowlaser1Sprite->Render();
+
     //------------------------------------------------------------------------
     // Example Sprite Code....
+    bunnySprite->Render();
     //------------------------------------------------------------------------
-    testSprite->Render();
 
+    //------------------------------------------------------------------------
+    // Example Text.
+    //------------------------------------------------------------------------
+    float x = gameVp.GetX(0.5f);
+    float y = gameVp.GetY(0.5f);
+    App::Print(x, y, "Sample Text", 1,0,0, GLUT_BITMAP_TIMES_ROMAN_24);
+
+    /*
     //------------------------------------------------------------------------
     // Example Line Drawing.
     //------------------------------------------------------------------------
-    /*
     static float a = 0.0f;
     float r = 1.0f;
     float g = 1.0f;
@@ -334,6 +378,7 @@ void MyGame::Render()
     a += 0.1f;
     for (int i = 0; i < 20; i++)
     {
+
         float sx = 200 + sinf(a + i * 0.1f) * 60.0f;
         float sy = 200 + cosf(a + i * 0.1f) * 60.0f;
         float ex = 700 - sinf(a + i * 0.1f) * 60.0f;
@@ -344,55 +389,17 @@ void MyGame::Render()
     }
     */
 
-    //------------------------------------------------------------------------
-    // Example Vectors....
-    //------------------------------------------------------------------------
-    {
-        switch(m_MoveState)
-        {
-        case 0:
-            App::Print(100, 100, "Move Sprite");
-            break;
-        case 1:
-            App::Print(100, 100, "Move Green Rect");
-            break;
-        case 2:
-            App::Print(100, 100, "Move Yellow Circle");
-            break;
-        }
-
-        App::Print(100, 75, "Press A to switch moving object");
-        
-        bool rectOverlapRotatingRect = m_MovingRect.Overlap(m_RotatingRect);
-        bool rectOverlapStaticCircle = m_MovingRect.Overlap(m_StaticCircle);
-
-        bool circleOverlapMovingRect = m_MovingCircle.Overlap(m_MovingRect);
-        bool circleOverlapRotatingRect = m_MovingCircle.Overlap(m_RotatingRect);
-        bool circleOverlapStaticCircle = m_MovingCircle.Overlap(m_StaticCircle);
-
-        (rectOverlapRotatingRect || circleOverlapRotatingRect) ? m_RotatingRect.Draw(Utils::Color_Grey) : m_RotatingRect.Draw(Utils::Color_Red);
-        (rectOverlapRotatingRect || circleOverlapMovingRect || rectOverlapStaticCircle) ? m_MovingRect.Draw(Utils::Color_Grey) : m_MovingRect.Draw(Utils::Color_Green);
-        (circleOverlapMovingRect || circleOverlapRotatingRect || circleOverlapStaticCircle) ? m_MovingCircle.Draw(Utils::Color_Grey) : m_MovingCircle.Draw(Utils::Color_Yellow);
-        (rectOverlapStaticCircle || circleOverlapStaticCircle) ? m_StaticCircle.Draw(Utils::Color_Grey) : m_StaticCircle.Draw(Utils::Color_White);
-
-        float centerX = gameVp.GetX(0.5f);
-        float centerY = gameVp.GetY(0.5f);
-
-        Vector2D v1 = Vector2D(0.25f, 0.f * gameVp.GetRatio());
-        Utils::DrawLine(centerX, centerY, centerX + gameVp.GetWidth(v1.x), centerY + gameVp.GetHeight(v1.y), Utils::Color_Red);
-
-        Vector2D v2 = Vector2D(0.f, 0.25f * gameVp.GetRatio());
-        Utils::DrawLine(centerX, centerY, centerX + gameVp.GetWidth(v2.x), centerY + gameVp.GetHeight(v2.y), Utils::Color_Green);
-
-        v1.Rotate(m_RotatingRect.GetRotation());
-        Utils::DrawLine(centerX, centerY, centerX + gameVp.GetWidth(v1.x), centerY + gameVp.GetHeight(v1.y), Utils::Color_White);
-    }
+    //To be called last
+    gameVp.RenderBorders();
 }
 
 void MyGame::Shutdown()
 {
     //Background
-    delete backgroundSprite;
+    //delete backgroundSprite3;
+    delete backgroundSprite1;
+    delete backgroundSprite2;
+    
     //Laser
     delete greenlaser1Sprite;
     delete bluelaser1Sprite;
@@ -401,10 +408,44 @@ void MyGame::Shutdown()
     delete redlaser1Sprite;
     delete yellowlaser1Sprite;
 
+    delete greenlaser2Sprite;
+    delete bluelaser2Sprite;
+    delete darkbluelaser2Sprite;
+    delete purplelaser2Sprite;
+    delete redlaser2Sprite;
+    delete yellowlaser2Sprite;
+
+    delete greenlaser3Sprite;
+    delete bluelaser3Sprite;
+    delete darkbluelaser3Sprite;
+    delete purplelaser3Sprite;
+    delete redlaser3Sprite;
+    delete yellowlaser3Sprite;
+    
     //------------------------------------------------------------------------
     // Example Sprite Code....
-    delete testSprite;
+    delete bunnySprite;
     //------------------------------------------------------------------------
+
+    App::ReleaseSound(".\\TestData\\music.wav");
 
     gameVp.Shutdown();
 }
+
+void MyGame::Restart()
+{
+    bunnySprite->position = Vector2D(0.5f, 0.25f);
+    bunnySprite->scale = Vector2D(1.f, 1.f);
+
+    backgroundSprite1->position = Vector2D(0.5f, 0.5f);
+    backgroundSprite2->position = Vector2D(0.5f, 1.47f);
+
+    greenlaser1Sprite->position = Vector2D(-10.f, -10.f);
+    bluelaser1Sprite->position = Vector2D(-10.f, -10.f);
+    darkbluelaser1Sprite->position = Vector2D(-10.f, -10.f);
+    purplelaser1Sprite->position = Vector2D(-10.f, -10.f);
+    redlaser1Sprite->position = Vector2D(-10.f, -10.f);
+    yellowlaser1Sprite->position = Vector2D(-10.f, -10.f);
+}
+
+

@@ -43,6 +43,7 @@ public:
 	bool PlaySound(const char *filename, DWORD flags = 0);
 	bool StopSound(const char *filename);
 	bool IsPlaying(const char *filename);
+	void SetVolume(const char* filename, float _volume);
 	void ReleaseSound(const char* filename);
 
 private:

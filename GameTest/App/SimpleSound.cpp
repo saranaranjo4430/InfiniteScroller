@@ -196,6 +196,19 @@ bool CSimpleSound::IsPlaying(const char *filename)
 	return false;
 }
 
+void CSimpleSound::SetVolume(const char* filename, float _volume)
+{
+    if (IsPlaying(filename))
+    {
+        if (m_sounds[filename] != nullptr)
+        {
+			float vol = DSBVOLUME_MIN + (DSBVOLUME_MAX - DSBVOLUME_MIN) * _volume;
+            m_sounds[filename]->SetVolume((LONG)vol);
+
+        }
+    }
+}
+
 bool CSimpleSound::StopSound(const char *filename)
 {
 	if (IsPlaying(filename) )
