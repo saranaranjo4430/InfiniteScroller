@@ -29,7 +29,9 @@ namespace Utils
     
     const CController* GetFirstActiveController();
 
-    float Clampf(float value, float min, float max);
+    float Clamp(float value, float min, float max);
+    float ClampMax(float value, float max);
+    float ClampMin(float value, float min);
     float DegToRad(float degrees);
     float RadToDeg(float radians);
     float Random(float fMin, float fMax);
