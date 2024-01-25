@@ -350,11 +350,18 @@ void MyGame::Update(float _deltaTime)
 {
     gameVp.Update(_deltaTime);
 
-    m_TotalPlayTimeInSeconds += _deltaTime / 1000.f;
+    float dtInSeconds = _deltaTime / 1000.f;
+
+    m_TotalPlayTimeInSeconds += dtInSeconds;
     
-    float HSpeed = 0.01f;
-    float VSpeed = HSpeed * gameVp.GetRatio();
-    float speed = 1.0f / 15.0f;
+    float HSpeed = 0.f;
+    float VSpeed = 0.f;
+    
+    if (canBunnyMove)
+    {
+        HSpeed = 0.75f * dtInSeconds;
+        VSpeed = HSpeed * gameVp.GetRatio();
+    }
 
     // Assuming the height of the background image is the same as the viewport height
     float backgroundHeight = 1.6f; // Replace with the actual height of your background image
@@ -395,15 +402,6 @@ void MyGame::Update(float _deltaTime)
 
     
     //lasers FALL
-
-    backgroundSprite1->SetAnimation(FALL);
-    backgroundSprite1->position.y -= VSpeed;
-
-    backgroundSprite2->SetAnimation(FALL);
-    backgroundSprite2->position.y -= VSpeed;
-
-    
-
     greenlaser1Sprite->position.y -= VSpeed;
     bluelaser1Sprite->position.y -= VSpeed;
     darkbluelaser1Sprite->position.y -= VSpeed;
@@ -483,10 +481,11 @@ void MyGame::Update(float _deltaTime)
     // Example Sprite Code....
     
     bunnySprite->Update(_deltaTime);
+
     const CController* pController = Utils::GetFirstActiveController();
 
-    if (canBunnyMove) {
-        
+    if (canBunnyMove) 
+    {
         if (pController)
         {
             if ((pController->GetLeftThumbStickX() > 0.5f) || pController->CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
@@ -528,12 +527,6 @@ void MyGame::Update(float _deltaTime)
             }
             */
 
-            if (pController->CheckButton(APP_PAD_EMUL_BUTTON_ALT_A, true))
-            {
-                
-                Restart();
-            }
-
             // Borders bunny 
             if (bunnySprite->position.x <= 0.3f) {
                 bunnySprite->position.x = 0.3f;
@@ -547,46 +540,39 @@ void MyGame::Update(float _deltaTime)
             else if (bunnySprite->position.y <= 0.f) {
                 bunnySprite->position.y = 0.f;
             }
-
-
-            //Collisions
-            if (bunnySprite->Overlap(greenlaser1Sprite))
-            {
-                collitionFlag = true;
-                canBunnyMove = false;
-                App::Print(gameVp.GetX(0.5f), gameVp.GetY(0.5f), "Game Over", 1, 0, 0, GLUT_BITMAP_TIMES_ROMAN_24);
-
-                /*bunnySprite->position.x = bunnySprite->position.x;
-                bunnySprite->position.y = bunnySprite->position.y;
-                backgroundSprite1->position.x = backgroundSprite1->position.x;
-                backgroundSprite1->position.y = backgroundSprite1->position.y;
-                backgroundSprite2->position.x = backgroundSprite2->position.x;
-                backgroundSprite2->position.y = backgroundSprite2->position.y;
-                */
-                //const CController* dController = Utils::GetFirstActiveController();
-                
-                if (collitionFlag == true)
-                {
-                    bunnySprite->position.y = 1.f;
-
-                    if (pController->CheckButton(APP_PAD_EMUL_BUTTON_ALT_A, true))
-                    {
-                        Restart();
-
-                        
-                    }
-                }
-            }
-                                
-                          
-            
-            
         }
         else
         {
             bunnySprite->SetAnimation(-1);
         }
 
+        //Collisions
+        if (bunnySprite->Overlap(greenlaser1Sprite))
+        {
+            collitionFlag = true;
+            canBunnyMove = false;
+
+            /*bunnySprite->position.x = bunnySprite->position.x;
+            bunnySprite->position.y = bunnySprite->position.y;
+            backgroundSprite1->position.x = backgroundSprite1->position.x;
+            backgroundSprite1->position.y = backgroundSprite1->position.y;
+            backgroundSprite2->position.x = backgroundSprite2->position.x;
+            backgroundSprite2->position.y = backgroundSprite2->position.y;
+            */
+            //const CController* dController = Utils::GetFirstActiveController();
+
+            if (collitionFlag == true)
+            {
+                bunnySprite->SetAnimation(-1);
+            }
+        }
+    }
+    else
+    {
+        if (pController && pController->CheckButton(XINPUT_GAMEPAD_A, true))
+        {
+            Restart();
+        }
     }
     
     //------------------------------------------------------------------------
@@ -618,10 +604,10 @@ void MyGame::Render()
     bunnySprite->Render();
     //------------------------------------------------------------------------
 
-    //------------------------------------------------------------------------
-    // Example Text.
-    //------------------------------------------------------------------------
-    App::Print(gameVp.GetX(0.5f), gameVp.GetY(0.5f), "Sample Text", 1,0,0, GLUT_BITMAP_TIMES_ROMAN_24);
+    if (!canBunnyMove)
+    {
+        App::Print(gameVp.GetX(0.5f), gameVp.GetY(0.5f), "Game Over. Restart ?", 1, 0, 0, GLUT_BITMAP_TIMES_ROMAN_24);
+    }
 
     char textBuffer[64];
     sprintf(textBuffer, "PlayTime: %.0fs", m_TotalPlayTimeInSeconds);
@@ -674,6 +660,8 @@ void MyGame::Restart()
 {
     canBunnyMove = true;
     collitionFlag = false;
+    m_TotalPlayTimeInSeconds = 0.f;
+
     bunnySprite->position = Vector2D(0.5f, 0.25f);
     bunnySprite->scale = Vector2D(1.f, 1.f);
 
