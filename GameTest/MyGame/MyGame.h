@@ -19,23 +19,19 @@ public:
     void Render();
     void Shutdown();
     void Restart();
-
-    void UpdateBackground(float _deltaTime, float VSpeed);
-    void UpdateLasers(float _deltaTime, float VSpeed);
-    void UpdateBunnySprite(float _deltaTime, const CController* pController, float HSpeed, float VSpeed);
-    void ManageBunnyBounds();
-    void HandleDifficulty();
+    
 
 private:
     //------------------------------------------------------------------------
   
     // Example Sprite Code....
     CGameSprite* bunnySprite;
+    CGameSprite* InitLaser(const std::string& filePath, const Vector2D& initialPosition);
+
 
     //background
     CGameSprite* backgroundSprite1;
     CGameSprite* backgroundSprite2;
-    CGameSprite* backgroundSprite3;
 
 
     //lasers 1
@@ -62,6 +58,7 @@ private:
     CGameSprite* redlaser3Sprite;
     CGameSprite* yellowlaser3Sprite;
     
+    void ResetLaserPosition(CGameSprite* laserSprite);
 
     enum
     {
