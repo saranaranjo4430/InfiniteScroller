@@ -137,6 +137,7 @@ void MyGame::Init(int width, int height)
     bunnySprite->AddFlag(DRAW_COLLISION);
 #endif
 }
+/*
 //___________________________________________________________________________________________________________________________________________
 void MyGame::Update(float _deltaTime)
 {
@@ -174,7 +175,7 @@ void MyGame::Update(float _deltaTime)
         App::Print(gameVp.GetX(0.5f), gameVp.GetY(0.5f), "Collision Detected", 1, 0, 0, GLUT_BITMAP_TIMES_ROMAN_24);
     }
 }
-
+/*
 void MyGame::HandleDifficulty()
 {
     float thresholdPositionY = -10.f; // Position Y pour désactiver les lasers
@@ -343,9 +344,9 @@ void MyGame::ManageBunnyBounds()
         bunnySprite->position.y = 0.f;
     }
 }
-
+*/
 //______________________________________________________________________________________________________________________________________
-/*void MyGame::Update(float _deltaTime)
+void MyGame::Update(float _deltaTime)
 {
     gameVp.Update(_deltaTime);
 
@@ -392,22 +393,17 @@ void MyGame::ManageBunnyBounds()
     redlaser1Sprite->Update(_deltaTime);
     yellowlaser1Sprite->Update(_deltaTime);
 
-    /*
+    
     //lasers FALL
-    //while (true) {
-    backgroundSprite1->SetAnimation(FALL);
-    //backgroundSprite1->position.y -= VSpeed;
 
-    //backgroundSprite2->SetPosition(0.5f, 0.9f);
-    backgroundSprite2->SetAnimation(FALL);
-    //backgroundSprite2->position.y -= VSpeed;
-    backgroundSprite1->position = Vector2D(0.5f, 1.5f);
-    backgroundSprite1->CreateAnimation(FALL, speed, { 0 });
     backgroundSprite1->SetAnimation(FALL);
-    //backgroundSprite1->position = Vector2D(0.5f, 1.5f);
-    //}
-    */
-/*
+    backgroundSprite1->position.y -= VSpeed;
+
+    backgroundSprite2->SetAnimation(FALL);
+    backgroundSprite2->position.y -= VSpeed;
+
+    
+
     greenlaser1Sprite->position.y -= VSpeed;
     bluelaser1Sprite->position.y -= VSpeed;
     darkbluelaser1Sprite->position.y -= VSpeed;
@@ -531,7 +527,7 @@ void MyGame::ManageBunnyBounds()
                 bunnySprite->angle -= 0.1f * pController->GetRightTrigger();
             }
             */
-/*
+
             if (pController->CheckButton(APP_PAD_EMUL_BUTTON_ALT_A, true))
             {
                 
@@ -558,7 +554,7 @@ void MyGame::ManageBunnyBounds()
             {
                 collitionFlag = true;
                 canBunnyMove = false;
-                App::Print(gameVp.GetX(0.5f), gameVp.GetY(0.5f), "Sara", 1, 0, 0, GLUT_BITMAP_TIMES_ROMAN_24);
+                App::Print(gameVp.GetX(0.5f), gameVp.GetY(0.5f), "Game Over", 1, 0, 0, GLUT_BITMAP_TIMES_ROMAN_24);
 
                 /*bunnySprite->position.x = bunnySprite->position.x;
                 bunnySprite->position.y = bunnySprite->position.y;
@@ -568,7 +564,7 @@ void MyGame::ManageBunnyBounds()
                 backgroundSprite2->position.y = backgroundSprite2->position.y;
                 */
                 //const CController* dController = Utils::GetFirstActiveController();
-                /*
+                
                 if (collitionFlag == true)
                 {
                     bunnySprite->position.y = 1.f;
@@ -598,7 +594,7 @@ void MyGame::ManageBunnyBounds()
     
 }
 
-*/
+
 
 //_________________________________________________________________________________________________________________________________________________________
 void MyGame::Render()
