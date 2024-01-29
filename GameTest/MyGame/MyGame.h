@@ -19,17 +19,19 @@ public:
     void Render();
     void Shutdown();
     void Restart();
+    
 
 private:
     //------------------------------------------------------------------------
   
     // Example Sprite Code....
     CGameSprite* bunnySprite;
+    CGameSprite* InitLaser(const std::string& filePath, const Vector2D& initialPosition);
+
 
     //background
     CGameSprite* backgroundSprite1;
     CGameSprite* backgroundSprite2;
-    CGameSprite* backgroundSprite3;
 
 
     //lasers 1
@@ -56,6 +58,7 @@ private:
     CGameSprite* redlaser3Sprite;
     CGameSprite* yellowlaser3Sprite;
     
+    void ResetLaserPosition(CGameSprite* laserSprite);
 
     enum
     {
@@ -67,5 +70,7 @@ private:
     };
 
     float m_TotalPlayTimeInSeconds = 0.f;
+    bool canBunnyMove;
+    bool collitionFlag;
     //------------------------------------------------------------------------
 };
